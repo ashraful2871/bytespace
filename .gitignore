@@ -36,6 +36,16 @@ yarn-error.log*
 # vercel
 .vercel
 
+# claude code (personal settings and session handoff notes)
+.claude/settings.local.json
+.claude/context/
+
+# figma pipeline: visual-diff output, and raw exports (processed into public/images by npm run assets, D8)
+.claude/figma/diff/
+.claude/figma/assets/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.claude
+

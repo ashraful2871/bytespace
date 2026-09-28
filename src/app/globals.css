@@ -1,8 +1,7 @@
-@import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap');
 @import "tailwindcss";
 
-
 @theme inline {
+  /* Brand — blue */
   --color-primary-50: #e7f6ff;
   --color-primary-100: #d3eeff;
   --color-primary-200: #b0ddff;
@@ -15,6 +14,7 @@
   --color-primary-900: #0b36a4;
   --color-primary-950: #071e5f;
 
+  /* Accent — lime */
   --color-secondary-50: #fdffe4;
   --color-secondary-100: #faffc5;
   --color-secondary-200: #f2ff92;
@@ -27,6 +27,7 @@
   --color-secondary-900: #465a0d;
   --color-secondary-950: #243300;
 
+  /* Neutral */
   --color-neutral-50: #f5f5f6;
   --color-neutral-100: #e5e6e8;
   --color-neutral-200: #ced0d3;
@@ -39,13 +40,204 @@
   --color-neutral-900: #3a3b3f;
   --color-neutral-950: #242528;
 
-  --font-sans: 'Satoshi', var(--font-poppins), sans-serif;
-  --font-poppins: var(--font-poppins);
-  --font-satoshi: 'Satoshi', sans-serif;
+  /* Text roles used by the design */
+  --color-ink: #040819;
+  --color-body: #4f4f4f;
+  --color-surface: #fafafa;
+  --color-track: #f6f6f6;
+
+  /* Accent — violet */
+  --color-violet-600: #7f30f7;
+  --color-violet-950: #300b6a;
+
+  /* Radii */
+  --radius-card: 24px;
+  --radius-thumb: 12px;
+  --radius-float: 16px;
+  --radius-pill: 24px;
+
+  /* Shadow A from Figma (8 layers). Cut-outs with transparency use drop-shadow-float instead. */
+  --shadow-float:
+    0.518px 0.741px 3.036px #0000000a, 2.233px 3.19px 5.723px #0000000f, 5.383px 7.69px 9.571px #00000012,
+    10.208px 14.582px 16.087px #00000014, 16.946px 24.209px 24px #00000017, 25.838px 36.912px 36px #0000001a,
+    37.122px 53.032px 56px #0000001b, 51.038px 72.912px 72px #00000021;
+
+  /* Legacy heading scale; Phase 07 replaces these with the type-* utilities below. */
+  --text-hero: 72px;
+  --text-hero--line-height: 85px;
+  --text-hero--letter-spacing: -0.01em;
+  --text-display: 44px;
+  --text-display--line-height: 53px;
+  --text-display--letter-spacing: -0.01em;
+  --text-title: 36px;
+  --text-title--line-height: 44px;
+  --text-title--letter-spacing: -0.01em;
+
+  --font-sans: var(--font-satoshi-family), ui-sans-serif, system-ui, sans-serif;
+  --font-satoshi: var(--font-satoshi-family), ui-sans-serif, system-ui, sans-serif;
+  --font-poppins: var(--font-poppins-family), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Fluid gutter (D1): 24px on phones, 72px at 1440, up to 120px. The 1200px column starts at x=120 at 1440. */
+:root {
+  --gutter: clamp(1.5rem, 5vw, 7.5rem);
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: calc(1200px + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* A 1440px layer centred on its section, for placing decorations in Figma frame coordinates. */
+@utility design-stage {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 1440px;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+/* The 120px blueprint grid behind the blue bands (lines are white at 12%), locked to the 1440 frame at
+   any width. A percentage position is relative to (width - 120px), so the frame's left edge
+   (50% of the width - 720px) is written as 50% - 660px. */
+@utility bg-blueprint {
+  background-color: var(--color-primary-800);
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.12) 2px, transparent 2px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.12) 2px, transparent 2px);
+  background-size: 120px 120px;
+  background-position: calc(50% - 660px) -2px;
+}
+
+/* Shadow A as a filter chain, so it follows the alpha of PNG/WebP cut-outs. Never box-shadow those. */
+@utility drop-shadow-float {
+  filter: drop-shadow(0.518px 0.741px 3.036px #0000000a) drop-shadow(2.233px 3.19px 5.723px #0000000f)
+    drop-shadow(5.383px 7.69px 9.571px #00000012) drop-shadow(10.208px 14.582px 16.087px #00000014)
+    drop-shadow(16.946px 24.209px 24px #00000017) drop-shadow(25.838px 36.912px 36px #0000001a)
+    drop-shadow(37.122px 53.032px 56px #0000001b) drop-shadow(51.038px 72.912px 72px #00000021);
+}
+
+/* Figma text styles: family, size, line height, weight and tracking in one class. */
+@utility type-heading-l {
+  font-family: var(--font-poppins);
+  font-size: 72px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility type-heading-m {
+  font-family: var(--font-poppins);
+  font-size: 44px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility type-title {
+  font-family: var(--font-poppins);
+  font-size: 36px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility type-display-s {
+  font-family: var(--font-poppins);
+  font-size: 44px;
+  line-height: 52px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+@utility type-display-xs {
+  font-family: var(--font-poppins);
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+@utility type-heading-s {
+  font-family: var(--font-poppins);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility type-heading-xs {
+  font-family: var(--font-poppins);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+@utility type-body-l {
+  font-family: var(--font-satoshi);
+  font-size: 18px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+@utility type-body-m {
+  font-family: var(--font-satoshi);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+@utility type-body-s {
+  font-family: var(--font-satoshi);
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+@utility type-body-xs {
+  font-family: var(--font-satoshi);
+  font-size: 12px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+@utility type-label-xl {
+  font-family: var(--font-satoshi);
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+@utility type-label-l {
+  font-family: var(--font-satoshi);
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+@utility type-label-m {
+  font-family: var(--font-satoshi);
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+@utility type-label-s {
+  font-family: var(--font-satoshi);
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+@utility type-label-xs {
+  font-family: var(--font-satoshi);
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Lock the page behind an open modal <dialog> (MobileNav). */
+html:has(dialog:modal) {
+  overflow: hidden;
 }
 
 body {
-  background-color: var(--color-neutral-50);
+  background-color: #ffffff;
   color: var(--color-neutral-950);
-  font-family: var(--font-satoshi);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

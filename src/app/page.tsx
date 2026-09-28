@@ -1,23 +1,25 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import Brands from "@/components/Brands";
-import Courses from "@/components/Courses";
-import LearningPaths from "@/components/LearningPaths";
-import Features from "@/components/Features";
-import Testimonials from "@/components/Testimonials";
-import Footer from "@/components/Footer";
+import Hero from "@/components/sections/Hero";
+import Brands from "@/components/sections/Brands";
+import Courses from "@/components/sections/Courses";
+import LearningPaths from "@/components/sections/LearningPaths";
+import Features from "@/components/sections/Features";
+import CreatorCta from "@/components/sections/CreatorCta";
+import Testimonials from "@/components/sections/Testimonials";
+import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col">
-      <Header />
-      <Hero />
-      <Brands />
-      <Courses />
-      <LearningPaths />
-      <Features />
-      <Testimonials />
+    <>
+      <main className="flex flex-col">
+        <Hero />
+        <Brands />
+        <Courses />
+        <LearningPaths />
+        <Features />
+        <CreatorCta />
+        <Testimonials />
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }

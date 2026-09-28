@@ -1,0 +1,22 @@
+{
+  "home": {
+    "url": "/",
+    "ref": "src/asset/Home.png",
+    "bands": [
+      ["hero", 0, 1024],
+      ["brands+courses", 1024, 1768],
+      ["grid+paths", 1768, 3120],
+      ["features", 3120, 4580],
+      ["cta+testimonials", 4580, 5852],
+      ["footer", 5852, 6377]
+    ]
+  },
+  "search": { "url": "/courses", "ref": ".claude/figma/screens/1440/search.png", "bands": [["page", 0, null]] },
+  "course-details": { "url": "/courses/build-digital-asset", "ref": ".claude/figma/screens/1440/course-details.png", "bands": [["page", 0, null]] },
+  "course-lessons": { "url": "/courses/build-digital-asset/lessons", "ref": ".claude/figma/screens/1440/course-lessons.png", "bands": [["page", 0, null]] },
+  "course-reviews": { "url": "/courses/build-digital-asset/reviews", "ref": ".claude/figma/screens/1440/course-reviews.png", "bands": [["page", 0, null]] },
+  "creator-profile": { "url": "/creators/purepearl-studio", "ref": ".claude/figma/screens/1440/creator-profile.png", "bands": [["page", 0, null]] },
+  "not-found": { "url": "/nope", "ref": ".claude/figma/screens/1440/not-found.png", "bands": [["page", 0, null]] },
+  "login": { "url": "/login", "ref": ".claude/figma/screens/1440/login.png", "bands": [["page", 0, null]] },
+  "register": { "url": "/signup", "ref": ".claude/figma/screens/1440/register.png", "bands": [["page", 0, null]] }
+}

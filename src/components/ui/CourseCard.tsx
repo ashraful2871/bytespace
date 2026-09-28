@@ -1,77 +1,110 @@
 import Image from "next/image";
-import { ChartNoAxesColumnIncreasing, Star } from "lucide-react";
+import Link from "next/link";
+import { SignalCellularAltIcon, StarRateIcon } from "@/components/icons";
 import AvatarStack from "@/components/ui/AvatarStack";
+import Pill from "@/components/ui/Pill";
 import { learnerAvatars, type Course } from "@/data/courses";
 
 type CourseCardProps = {
   course: Course;
+  /** default: the Home grid card (13:249) · relaxed: looser line heights and a dark bubble (Features, Auth). */
+  variant?: "default" | "relaxed";
   className?: string;
 };
 
-export default function CourseCard({ course, className = "" }: CourseCardProps) {
-  const stats = [
-    `${course.lessons} Lessons`,
-    course.duration,
-    `${course.comments} Comments`,
-  ];
+const variants = {
+  default: {
+    title: "leading-[1.2]",
+    byline: "leading-[19px]", // 12/1.6 rounded to Figma's 19px box, so the card is 384 tall
+    level: "leading-[1.2]",
+    rating: "leading-[1.6]",
+    bubble: "lime",
+  },
+  relaxed: {
+    title: "",
+    byline: "leading-5",
+    level: "leading-5",
+    rating: "font-medium leading-7",
+    bubble: "dark",
+  },
+} as const;
+
+/** 373 × 384 course card. The title link is stretched over the whole card, so the card is one click target. */
+export default function CourseCard({ course, variant = "default", className = "" }: CourseCardProps) {
+  const v = variants[variant];
+  const stats = [`${course.lessons} Lessons`, course.duration, `${course.comments} Comments`];
 
   return (
     <article
-      className={`min-w-0 rounded-[20px] border border-neutral-200 bg-white p-[15px] pb-[19px] ${className}`}
+      className={`min-w-0 overflow-clip rounded-card border border-neutral-200 bg-white transition-colors ring-neutral-950 ring-offset-2 hover:border-neutral-300 has-[a:focus-visible]:ring-2 ${className}`}
     >
-      <div className="relative aspect-[341/195] overflow-hidden rounded-[10px]">
-        <Image
-          src={course.image}
-          alt=""
-          fill
-          sizes="(min-width: 1248px) 341px, (min-width: 768px) 30vw, 90vw"
-          className="object-cover"
-        />
-        <ul className="absolute inset-x-2 bottom-3 flex justify-between gap-1 sm:inset-x-[13px] sm:bottom-5 sm:gap-2">
-          {stats.map((stat) => (
-            <li
-              key={stat}
-              className="flex h-[26px] items-center rounded-full bg-white/45 px-2 text-[11px] whitespace-nowrap sm:px-3 sm:text-xs text-neutral-700 backdrop-blur-[6px]"
-            >
-              {stat}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="mt-[17px] flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="truncate font-poppins text-xl leading-[30px] font-semibold tracking-[-0.01em] text-black">
-            {course.title}
-          </h3>
-          <p className="text-xs leading-4 text-body">
-            by <span className="text-primary-800">{course.author}</span>
-          </p>
+      <div className="relative px-[15px] pt-[15px] pb-5">
+        <div className="@container relative aspect-[341/195] overflow-hidden rounded-thumb bg-[#443131]">
+          <Image
+            src={course.image}
+            alt=""
+            fill
+            sizes="(min-width: 1280px) 341px, (min-width: 768px) 45vw, 90vw"
+            className="object-cover"
+          />
+          {/* Figma places the pills at top 150; bottom 13 is the same point and holds when the thumbnail shrinks.
+              Below a 335px thumbnail the pills tighten so the row stays on one line down to ~294px (375px screens). */}
+          <ul className="absolute right-2 bottom-[13px] left-[13px] flex flex-wrap gap-3 @max-[335px]:left-2 @max-[335px]:gap-1.5">
+            {stats.map((stat) => (
+              <li key={stat}>
+                <Pill variant="glass" className="@max-[335px]:px-2">
+                  {stat}
+                </Pill>
+              </li>
+            ))}
+          </ul>
         </div>
-        <p className="flex shrink-0 items-center gap-[5px] pt-1.5 text-lg leading-6 text-body">
-          {course.rating}
-          <Star aria-hidden className="size-5 fill-[#d3d3d3] text-[#d3d3d3]" />
-          <span className="sr-only">rating</span>
-        </p>
-      </div>
 
-      <div className="mt-[17px] flex items-center gap-3">
-        <span className="flex h-8 items-center gap-[7px] rounded-full bg-neutral-50 pr-2.5 pl-3.5 text-[13px] text-neutral-700">
-          <ChartNoAxesColumnIncreasing aria-hidden className="size-4" strokeWidth={2.5} />
-          {course.level}
-        </span>
-        <AvatarStack
-          avatars={learnerAvatars}
-          more={`${course.learners}+`}
-          size={32}
-          step={24}
-        />
-      </div>
+        <div className="mt-[21px] flex flex-col gap-4">
+          {/* Figma puts the rating at (305,231): the top-right corner of the body. */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h3 className={`truncate type-heading-xs text-black ${v.title}`}>
+                <Link
+                  href={`/courses/${course.slug}`}
+                  className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-hidden"
+                >
+                  {course.title}
+                </Link>
+              </h3>
+              <p className={`text-xs text-body ${v.byline}`}>
+                by <span className="text-primary-800">{course.author}</span>
+              </p>
+            </div>
+            <p className={`mr-px flex shrink-0 items-center text-lg text-body ${v.rating}`}>
+              {course.rating}
+              <StarRateIcon size={24} className="text-neutral-200" />
+              <span className="sr-only">out of 5</span>
+            </p>
+          </div>
 
-      <p className="mt-[17px] leading-none text-body">
-        <span className="text-xl leading-6 font-bold text-primary-800">${course.price}</span>
-        <span className="text-xs">/lifetime</span>
-      </p>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1 rounded-pill bg-neutral-50 px-3 py-1.5 text-neutral-700">
+              <SignalCellularAltIcon size={20} />
+              <span className={`text-xs font-medium ${v.level}`}>{course.level}</span>
+            </span>
+            <AvatarStack avatars={learnerAvatars} more={`${course.learners}+`} size={32} step={24} bubble={v.bubble} />
+          </div>
+
+          {variant === "relaxed" ? (
+            <p className="flex items-end font-poppins text-xl leading-7 text-primary-800">
+              <span className="font-medium">$</span>
+              <span className="font-semibold">{course.price}</span>
+              <span className="type-body-xs text-body">/lifetime</span>
+            </p>
+          ) : (
+            <p className="flex items-end">
+              <span className="font-poppins text-xl leading-[1.2] font-semibold text-primary-800">${course.price}</span>
+              <span className="type-body-xs text-body">/lifetime</span>
+            </p>
+          )}
+        </div>
+      </div>
     </article>
   );
 }

@@ -10,7 +10,7 @@ const FIGMA = path.join(ROOT, ".claude/figma/assets");
 const OUT = path.join(ROOT, "src/components/icons");
 
 // [component, style, glyph, filled?]. Names are the Material Symbols glyphs; comments note where the
-// glyph was matched against Figma or public/images/categories rather than taken from the plan.
+// glyph was matched against Figma or the Home.png category crops rather than taken from the plan.
 const symbols = [
   ["Search", "outlined", "search"],
   ["ShoppingBag", "outlined", "shopping_bag"],
@@ -32,9 +32,9 @@ const symbols = [
   ["Article", "outlined", "article"],
   ["WorkspacePremium", "outlined", "workspace_premium"],
   ["SupportAgent", "outlined", "support_agent"],
-  // Category icons, matched against public/images/categories/*.png.
+  // Category icons, matched against the Home.png category crops (removed in Phase 04).
   ["Computer", "outlined", "computer"], // IT & Software
-  ["Domain", "outlined", "domain"], // Business (the plan guessed business_center)
+  ["Domain", "rounded", "domain"], // Business (the plan guessed business_center; Figma 12:166 is Style=Round)
   ["ConnectWithoutContact", "outlined", "connect_without_contact"], // Marketing (plan: campaign)
   ["PhotoCameraFront", "outlined", "photo_camera_front"], // Photography (plan: photo_camera)
   ["Menu", "outlined", "menu"],

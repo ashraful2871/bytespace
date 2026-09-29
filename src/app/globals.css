@@ -100,6 +100,14 @@
   pointer-events: none;
 }
 
+/* A 1440px Figma frame scaled to fill its container at any width (zoom = 100cqw / 1440px; tan(atan2())
+   divides two lengths into a plain number). The parent needs `@container`. Zoom scales layout too, so the
+   section's height follows. */
+@utility zoom-frame {
+  width: 1440px;
+  zoom: tan(atan2(100cqw, 1440px));
+}
+
 /* The 120px blueprint grid behind the blue bands (lines are white at 12%), locked to the 1440 frame at
    any width. A percentage position is relative to (width - 120px), so the frame's left edge
    (50% of the width - 720px) is written as 50% - 660px. */

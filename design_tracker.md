@@ -13,7 +13,7 @@
 | 02  | Shell: Header, MobileNav, Footer      | `/phase-02-shell`            | 🟨     | 2026-09-28 | Done (tsc, lint, build, diff pass; keyboard and 375 checked over CDP); awaiting user review. Header strip (y 0–120) 0.41 → 0.37 |
 | 03  | Home: Hero                            | `/phase-03-hero`             | 🟨     | 2026-09-28 | Done (tsc, lint, build, diff pass; offsets ≤2px; 1280/1024/768/375 checked over CDP); awaiting user review. Hero 1.35 → 1.02 |
 | 04  | Home: Brands, Courses, Learning Paths | `/phase-04-courses`          | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; sections land on exact Figma y; 1280/1024/768/375 checked over CDP); awaiting user review. Brands still on crops (no SVG export) |
-| 05  | Home: Features                        | `/phase-05-features`         | ⬜     |            |                                                                                                                                 |
+| 05  | Home: Features                        | `/phase-05-features`         | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; no side strips at 1920; 1280/1024 captured, 768/375 over CDP with no overflow); awaiting user review. Features 2.43 → 1.46; scales as the 1440 frame from lg (1.83 @1920, 1.84 @1280) |
 | 06  | Home: CTA and Testimonials            | `/phase-06-cta-testimonials` | ⬜     |            |                                                                                                                                 |
 | 07  | Home: responsive and QA sign-off      | `/phase-07-home-qa`          | ⬜     |            |                                                                                                                                 |
 | 08  | Data model, routing and 404           | `/phase-08-routes`           | ⬜     |            |                                                                                                                                 |
@@ -31,7 +31,7 @@
 | home/hero             | 1.35     | 1.02   | ≤2     |
 | home/brands+courses   | 1.09     | 0.93   | ≤2     |
 | home/grid+paths       | 1.59     | 1.09   | ≤2     |
-| home/features         | 2.46     | 2.43   | over   |
+| home/features         | 2.46     | 1.46   | ≤2     |
 | home/cta+testimonials | 2.73     | 2.72   | over   |
 | home/footer           | 0.49     | 0.45   | ≤2     |
 | search                |          |        |        |
@@ -55,6 +55,8 @@
 - ⛔ Phase 04 DoD gap: `public/images/svg/brands/` doesn't exist, so Brands still uses PNG crops. They were re-cut from Home.png to the exact 1:1708 frame boxes (167/168/170/170×41, 169×42). Swap in `brand-1..5.svg` (same sizes) and delete `public/images/brands/` once `npm run assets` copies them. Thumbnails 2–6 also stay on the 1x crops (`course-N.png`) until thumb-2..6 land. Only course 1 is `.webp`.
 - Phase 04 rounding: SectionHeader rounds line heights from md to Figma's frame heights (heading-m 53px, title 43px, body-l 29px), and the CourseCard by-line is 19px, not 19.2. Without this, sub-pixel boxes shifted every section below Courses up by 1px (features 3119.02).
 - Phase 04 icon fix: Business is `rounded/domain` (Figma 12:166 is Style=Round). IT stays `outlined/computer`; Figma's glyph is just heavier (svg-400 only).
+- Phase 05 spring offsets: the Features ornament image rects sit 2px left of their frames, so the springs are at (404,67) and (303,114), matching the Phase 03 convention.
+- Phase 05 decision (user, 2026-09-29): from lg (1024) up, Features renders as the 1440 Figma frame scaled to the window (`zoom-frame` utility: zoom = 100cqw/1440px, parent `@container`), so it fills wide screens like Figma. Below lg the rows stack. Phase 07: consider the same for the other sections, which still use the fixed 1200 column.
 - Phase 04 tip: after replacing a file in `public/images` under the same name, delete `.next/dev/cache/images`. Otherwise the dev image optimizer keeps serving the old file (the brand crops rendered at the old 176×50 ratio).
 
 - Figma MCP call limit reached on the Starter plan (2026-09-28). Phases must work from pre-captured specs and manual exports.
@@ -73,6 +75,8 @@
 
 ## Session log (newest first, one line each)
 
+- 2026-09-29: Phase 05 follow-up. The user saw extra side space at 1920, so Features now scales the whole 1440 frame to the window from lg (`zoom-frame` in globals.css). The lg zoom .75 and flex-1 column logic are gone. 1440 unchanged (1.46); 1920 1.83, 1280 1.84 against the scaled ref; no overflow from 375 to 1920.
+- 2026-09-29: Phase 05 → 🟨. Features rebuilt as real DOM: Glow SVGs in a design-stage (native boxes at -548,-505 and -327,906; they fade into surface past 1440, so no extra gradient needed), rows at 120/72/120 with the content frame reaching 59px into the right gutter at xl, PathVisual (relaxed CourseCard, student.webp, ProgressCard) and CreatorVisual (revenue and YTD cards, cropped creator-photo, HappyStudentsCard, springs). ProgressCard and HappyStudentsCard gained `variant="relaxed"`. Visuals zoom .5–.58 / .9–1 / .75 below xl. Removed features/creator.png, student.png, spring-lime.png and the radial-gradient array. features 1.46.
 - 2026-09-29: Phase 04 → 🟨. Brands (exact-box crops, 202 tall), SectionHeader (gap 16, type-* with integer line heights, text-balance), Chip links `/courses?category=<slug>` in 3 rows at xl, CourseCard rebuilt (stretched link, glass Pills with a container-query tight mode below 335px, level pill, rating in the title row, `relaxed` variant not wired yet), 373px grid columns, Learning Paths on generated icons linking to categories. Data: slugs plus `categories`. Removed the categories/*.png and learner-*.png crops. brands+courses 0.93, grid+paths 1.09.
 - 2026-09-28: Phase 03 → 🟨. Hero rebuilt: flex text block (top 169, gaps 32/60), `form role=search action=/courses`, lime-arc.svg ring, student.webp with drop-shadow-float, FloatingCards on FloatingCard/ProgressBar/StarIcon with the happy-*.webp avatars, 6 Ornaments in a design-stage (md+). The visual is a 1150×512 sub-stage: absolute at lg+, zoom .31/.54/.64 below. The lucide imports and the hero/*.png and avatars/student-*.png crops are gone. Hero 1.02%.
 - 2026-09-28: Phase 01 → 🟨. Tokens (track/violet, radii, shadow-float + drop-shadow-float, 18 type-\* utilities, fluid container, design-stage, frame-locked blueprint), 27 generated icons, and the primitives Button/Chip/Pill/ProgressBar/Logo/AvatarStack/FloatingCard/Ornament/Glow/RatingStars. Scratch route screenshotted and deleted. Diff mean unchanged (1.62).

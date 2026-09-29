@@ -78,6 +78,9 @@ export const categoryRows: Category[][] = [
 
 export const categories: Category[] = categoryRows.flat();
 
+/** The single chip row on Search (55:1819): the first desktop row plus Cooking. */
+export const searchCategories: Category[] = [...categoryRows[0], ...categories.filter((c) => c.slug === "cooking")];
+
 export const levels: Level[] = ["Beginner", "Intermediate", "Advanced"];
 
 /** Learning-path cards. `icon` is a key into the icon map in `LearningPaths`. */
@@ -314,6 +317,22 @@ export function parseCourseQuery(params: SearchParams): CourseQuery {
   };
 }
 
+/**
+ * A `/courses` URL for `query` with `patch` applied. Any change resets the page unless `patch` sets one, and the
+ * defaults (Featured, Most relevant, page 1) are left out, so the plain catalogue stays at `/courses`.
+ */
+export function coursesHref(query: CourseQuery, patch: Partial<CourseQuery> = {}) {
+  const { q, category, level, sort, page } = { ...query, page: undefined, ...patch };
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (category && category !== "featured") params.set("category", category);
+  if (level) params.set("level", level);
+  if (sort && sort !== "relevant") params.set("sort", sort);
+  if (page && page > 1) params.set("page", String(page));
+  const search = params.toString();
+  return search ? `/courses?${search}` : "/courses";
+}
+
 /** Search in Figma pages through 5 × 18 cards, so the unfiltered catalogue repeats the 6 seeds 15 times. */
 const CATALOGUE_REPEAT = 15;
 
@@ -350,7 +369,8 @@ export function listCourses({ q, category, level, sort, page = 1, perPage = 18 }
   const sorter = sorters[sort as Sort];
   if (sorter) matches = matches.toSorted(sorter);
 
-  const filtered = Boolean(query || category || level);
+  // "featured" is the unfiltered catalogue (Home's Featured chip links to it).
+  const filtered = Boolean(query || (category && category !== "featured") || level);
   const pool = (filtered ? [matches] : Array.from({ length: CATALOGUE_REPEAT }, () => matches)).flatMap((run, r) =>
     run.map((course) => ({ id: `${course.slug}-${r}`, course })),
   );

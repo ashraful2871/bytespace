@@ -1,6 +1,10 @@
 export type Level = "Beginner" | "Intermediate" | "Advanced";
 
-export type IncludeIcon = "article" | "videocam" | "workspace-premium" | "support-agent";
+export type IncludeIcon =
+  | "article"
+  | "videocam"
+  | "workspace-premium"
+  | "support-agent";
 
 export type Review = {
   name: string;
@@ -13,15 +17,11 @@ export type Review = {
 
 export type Course = {
   slug: string;
-  /** Short title on the cards. */
   title: string;
-  /** Title on the detail page and in the document title. */
   fullTitle: string;
   subtitle: string;
-  /** Creator name as the cards print it ("by purepearl studio"). */
   author: string;
   creatorSlug: string;
-  /** A `categories` slug. */
   category: string;
   image: string;
   rating: number;
@@ -34,14 +34,12 @@ export type Course = {
   reviewsCount: number;
   students: number;
   description: string[];
-  /** Sneak Peek image paths. */
   sneakPeek: string[];
   keyPoints: string[];
   curriculum: {
     lessons: number;
     hours: number;
     preview: { no: number; title: string; minutes: number }[];
-    /** "99 more videos". */
     more: number;
   };
   includes: { icon: IncludeIcon; label: string }[];
@@ -50,8 +48,10 @@ export type Course = {
   lessonContent: string;
   progressText: string;
   reviewsIntro: string;
-  /** `breakdown` counts reviews from 5 stars down to 1. */
-  ratingSummary: { average: number; breakdown: [number, number, number, number, number] };
+  ratingSummary: {
+    average: number;
+    breakdown: [number, number, number, number, number];
+  };
   reviews: Review[];
 };
 
@@ -69,18 +69,37 @@ const category = (label: string): Category => ({
   label,
 });
 
-/** Category chips, grouped into the three rows used by the desktop layout. */
 export const categoryRows: Category[][] = [
-  ["Featured", "Music", "Drawing & Painting", "Marketing", "Animation", "Social Media", "UI/UX Design", "Creative Marketing"],
-  ["Digital Illustration", "Film & Video", "Crafts", "Freelance & Entrepreneurship", "Graphic Design", "Photography"],
+  [
+    "Featured",
+    "Music",
+    "Drawing & Painting",
+    "Marketing",
+    "Animation",
+    "Social Media",
+    "UI/UX Design",
+    "Creative Marketing",
+  ],
+  [
+    "Digital Illustration",
+    "Film & Video",
+    "Crafts",
+    "Freelance & Entrepreneurship",
+    "Graphic Design",
+    "Photography",
+  ],
   ["Productivity", "Web Development", "Data Science", "Cooking"],
 ].map((row) => row.map(category));
 
 export const categories: Category[] = categoryRows.flat();
 
+export const searchCategories: Category[] = [
+  ...categoryRows[0],
+  ...categories.filter((c) => c.slug === "cooking"),
+];
+
 export const levels: Level[] = ["Beginner", "Intermediate", "Advanced"];
 
-/** Learning-path cards. `icon` is a key into the icon map in `LearningPaths`. */
 export const learningPaths = [
   { slug: "design", label: "Design", icon: "design" },
   { slug: "development", label: "Development", icon: "development" },
@@ -90,9 +109,14 @@ export const learningPaths = [
   { slug: "photography", label: "Photography", icon: "photography" },
 ] as const;
 
-/** The category slugs each learning path covers, so `?category=design` (Learning Paths, Footer) filters the catalogue. */
 const pathCategories: Record<string, string[]> = {
-  design: ["ui-ux-design", "graphic-design", "digital-illustration", "drawing-and-painting", "animation"],
+  design: [
+    "ui-ux-design",
+    "graphic-design",
+    "digital-illustration",
+    "drawing-and-painting",
+    "animation",
+  ],
   development: ["web-development"],
   "it-and-software": ["data-science", "web-development"],
   business: ["freelance-and-entrepreneurship", "productivity"],
@@ -100,11 +124,14 @@ const pathCategories: Record<string, string[]> = {
   photography: ["photography", "film-and-video"],
 };
 
-export const learnerAvatars = [1, 2, 3, 4].map((n) => `/images/avatars/learner-${n}.webp`);
+export const learnerAvatars = [1, 2, 3, 4].map(
+  (n) => `/images/avatars/learner-${n}.webp`,
+);
 
-export const happyStudentAvatars = [1, 2, 3, 4, 5, 6, 7].map((n) => `/images/avatars/happy-${n}.webp`);
+export const happyStudentAvatars = [1, 2, 3, 4, 5, 6, 7].map(
+  (n) => `/images/avatars/happy-${n}.webp`,
+);
 
-// Card fields shared by every seed. The cards in Home and Search all read 4.5 and Beginner.
 const card = {
   author: "purepearl studio",
   creatorSlug: "purepearl-studio",
@@ -117,7 +144,6 @@ const card = {
   learners: 26,
 } as const;
 
-// Detail copy for Build Digital Asset (Course Details 55:4066, Lessons, Reviews). The other courses reuse it.
 const detail = {
   subtitle: "Unlock the Power of Digital Creation with Expert Guidance",
   reviewsCount: 172,
@@ -156,7 +182,6 @@ const detail = {
   ],
   modulesIntro:
     "Immerse yourself in the course content as we break down each module into comprehensive lessons, providing practical insights and hands-on experiences.",
-  // Figma skips Module 3.
   modules: [
     {
       title: "Module 1: Introduction to Digital Assets",
@@ -232,11 +257,17 @@ const detail = {
   ],
 } satisfies Partial<Course>;
 
-type Seed = Pick<Course, "slug" | "title" | "category" | "image"> & { fullTitle?: string };
+type Seed = Pick<Course, "slug" | "title" | "category" | "image"> & {
+  fullTitle?: string;
+};
 
-// Thumbnails 2–6 are 1x crops of Home.png until the manual export (thumb-2..6) becomes course-N.webp.
 const seeds: Seed[] = [
-  { slug: "learn-figma-from-basic", title: "Learn Figma from Basic", category: "ui-ux-design", image: "/images/courses/course-1.webp" },
+  {
+    slug: "learn-figma-from-basic",
+    title: "Learn Figma from Basic",
+    category: "ui-ux-design",
+    image: "/images/courses/course-1.webp",
+  },
   {
     slug: "build-digital-asset",
     title: "Build Digital Asset",
@@ -244,7 +275,12 @@ const seeds: Seed[] = [
     category: "graphic-design",
     image: "/images/courses/course-2.png",
   },
-  { slug: "the-power-of-big-data", title: "the Power of Big Data", category: "data-science", image: "/images/courses/course-3.png" },
+  {
+    slug: "the-power-of-big-data",
+    title: "the Power of Big Data",
+    category: "data-science",
+    image: "/images/courses/course-3.png",
+  },
   {
     slug: "balancing-productivity-and-wellbeing",
     title: "Balancing Productivity and Wellbeing",
@@ -288,7 +324,6 @@ export type Sort = (typeof sortOptions)[number]["value"];
 
 export type CourseQuery = {
   q?: string;
-  /** A category slug, a learning-path slug or "featured" (everything). */
   category?: string;
   level?: string;
   sort?: string;
@@ -298,7 +333,6 @@ export type CourseQuery = {
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-/** Reads `q`, `category`, `level`, `sort` and `page` from a page's awaited `searchParams` (the first value of each). */
 export function parseCourseQuery(params: SearchParams): CourseQuery {
   const first = (key: string) => {
     const value = params[key];
@@ -314,7 +348,25 @@ export function parseCourseQuery(params: SearchParams): CourseQuery {
   };
 }
 
-/** Search in Figma pages through 5 × 18 cards, so the unfiltered catalogue repeats the 6 seeds 15 times. */
+export function coursesHref(
+  query: CourseQuery,
+  patch: Partial<CourseQuery> = {},
+) {
+  const { q, category, level, sort, page } = {
+    ...query,
+    page: undefined,
+    ...patch,
+  };
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (category && category !== "featured") params.set("category", category);
+  if (level) params.set("level", level);
+  if (sort && sort !== "relevant") params.set("sort", sort);
+  if (page && page > 1) params.set("page", String(page));
+  const search = params.toString();
+  return search ? `/courses?${search}` : "/courses";
+}
+
 const CATALOGUE_REPEAT = 15;
 
 const sorters: Record<Sort, ((a: Course, b: Course) => number) | null> = {
@@ -326,23 +378,34 @@ const sorters: Record<Sort, ((a: Course, b: Course) => number) | null> = {
 };
 
 function inCategory(course: Course, slug: string) {
-  return slug === "featured" || course.category === slug || (pathCategories[slug]?.includes(course.category) ?? false);
+  return (
+    slug === "featured" ||
+    course.category === slug ||
+    (pathCategories[slug]?.includes(course.category) ?? false)
+  );
 }
 
-/**
- * The Search catalogue. Filters match the seeds; with no filter the seeds repeat to fill Figma's 5 pages. `page` is
- * clamped to the available pages, and each item has a stable `id` for React keys.
- */
-export function listCourses({ q, category, level, sort, page = 1, perPage = 18 }: CourseQuery = {}) {
+export function listCourses({
+  q,
+  category,
+  level,
+  sort,
+  page = 1,
+  perPage = 18,
+}: CourseQuery = {}) {
   const query = q?.trim().toLowerCase();
-  const categoryLabel = (slug: string) => categories.find((c) => c.slug === slug)?.label ?? "";
+  const categoryLabel = (slug: string) =>
+    categories.find((c) => c.slug === slug)?.label ?? "";
 
   let matches = courses.filter(
     (course) =>
       (!query ||
-        [course.title, course.fullTitle, course.author, categoryLabel(course.category)].some((field) =>
-          field.toLowerCase().includes(query),
-        )) &&
+        [
+          course.title,
+          course.fullTitle,
+          course.author,
+          categoryLabel(course.category),
+        ].some((field) => field.toLowerCase().includes(query))) &&
       (!category || inCategory(course, category)) &&
       (!level || course.level.toLowerCase() === level.toLowerCase()),
   );
@@ -350,8 +413,14 @@ export function listCourses({ q, category, level, sort, page = 1, perPage = 18 }
   const sorter = sorters[sort as Sort];
   if (sorter) matches = matches.toSorted(sorter);
 
-  const filtered = Boolean(query || category || level);
-  const pool = (filtered ? [matches] : Array.from({ length: CATALOGUE_REPEAT }, () => matches)).flatMap((run, r) =>
+  const filtered = Boolean(
+    query || (category && category !== "featured") || level,
+  );
+  const pool = (
+    filtered
+      ? [matches]
+      : Array.from({ length: CATALOGUE_REPEAT }, () => matches)
+  ).flatMap((run, r) =>
     run.map((course) => ({ id: `${course.slug}-${r}`, course })),
   );
 

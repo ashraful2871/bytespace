@@ -17,7 +17,7 @@
 | 06  | Home: CTA and Testimonials            | `/phase-06-cta-testimonials` | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; 1280/1024/768/375 captured over CDP with no overflow); awaiting user review. cta+testimonials 2.72 → 1.08. From 1440 up the CTA scales like Figma (user request; 0.95 @1920). Commit message below |
 | 07  | Home: responsive and QA sign-off      | `/phase-07-home-qa`          | ✅     | 2026-09-29 | Home signed off: 2026-09-29, pending your review. All 6 bands ≤2 (mean 1.02); no overflow 375–2560; tap targets ≥44; tsc, lint and build clean. Commit message below |
 | 08  | Data model, routing and 404           | `/phase-08-routes`           | 🟨     | 2026-09-29 | Done (tsc, lint, build: 18 course + 1 creator routes SSG; unknown slugs 404; no overflow at 375); awaiting user review. 404 1.49 vs the scaled preview |
-| 09  | Search page `/courses`                | `/phase-09-search`           | ⬜     |            |                                                                                                                                 |
+| 09  | Search page `/courses`                | `/phase-09-search`           | 🟨     | 2026-09-29 | Done (tsc, lint, build; every block lands on its Figma y, page 3853 tall; no overflow at 375/768/1024 with any menu open); awaiting user review. 2.12 vs the scaled preview |
 | 10  | Course detail shell and About         | `/phase-10-course-about`     | ⬜     |            |                                                                                                                                 |
 | 11  | Lessons and Reviews tabs              | `/phase-11-course-tabs`      | ⬜     |            |                                                                                                                                 |
 | 12  | Creator profile                       | `/phase-12-creator`          | ⬜     |            |                                                                                                                                 |
@@ -34,7 +34,7 @@
 | home/features         | 2.46     | 1.46   | ≤2     |
 | home/cta+testimonials | 2.73     | 1.08   | ≤2     |
 | home/footer           | 0.49     | 0.52   | ≤2     |
-| search                |          |        |        |
+| search                |          | 2.12\* | ≈2     |
 | course/about          |          |        |        |
 | course/lessons        |          |        |        |
 | course/reviews        |          |        |        |
@@ -43,7 +43,7 @@
 | signup                |          |        |        |
 | 404                   |          | 1.49\* | ≤2     |
 
-\* Scored against `screens/not-found.png` scaled ×1.237 (`--ref`), because `screens/1440/not-found.png` doesn't exist yet. Re-score once it does.
+\* Scored against the 598px previews scaled to 1440 (`--ref`): `screens/not-found.png` ×1.237 and `screens/search.png` ×2.408 (the blur of a 2.4× upscale costs most of search's 2.12; its geometry matches the tree to the pixel). The `screens/1440/*` exports don't exist yet. Re-score once they do.
 
 ## Decisions (from design_plan.md §9; record changes here)
 
@@ -56,6 +56,11 @@
 - home/footer: the newsletter button reads "Subscribe", not Figma's "Search" (copied from the hero; the label should say what it does). footer 0.45 → 0.52. Approved 2026-09-29.
 
 ## Blockers and open questions
+- Phase 09 deviations, need approval: (1) pagination is centred (564–876) as the spec says, but Figma's box sits at x=588, 25px right of centre. (2) At page 1, Prev (and Next on the last page) is a grey (`neutral-300`), non-link arrow; Figma draws Prev dark on page 1. (3) The search placeholder uses `neutral-500`, following the approved hero deviation (Figma `neutral-400`). (4) The current page number follows Figma in `neutral-300` (#abaeb5, about 2.2:1 on white, below AA). It's announced as `aria-current="page"`, but confirm that the owner wants the grey number and not a highlighted one.
+- Phase 09 spec correction: the page numbers are `type-heading-xs` (Poppins 600 20/28; Figma boxes are 28 tall, and "2" is 12 wide), not `type-body-l`. The filter buttons use a 4px icon–label gap (Figma 55:170: icon at 16, label at 44), not the Button's 8, so they're written out in `FilterBar`, not `buttonClasses`.
+- Phase 09 menus: Filter lists the learning paths plus Clear filters, Level offers Any/Beginner/Intermediate/Advanced, Category lists all 18 categories, and Sort lists the `sortOptions`. The band's lime "Courses" menu is a search scope (Courses and Creators, where Creators goes to the one creator page, as in the header). They are native `<details name=…>` (one open at a time, no JS), and the page keys them on the URL so they close after a navigation. Clicking outside or pressing Esc doesn't close them (static v1). Revisit with a client menu in Phase 14 if wanted.
+- Phase 09 data: `?category=featured` now returns the full 90-course catalogue (it used to give the 6 filtered seeds, so Home's Featured chip landed on one page). `coursesHref(query, patch)` builds every search link, resets the page on any filter change and leaves out the defaults. Filters return unique seed matches, so `?category=music&page=2` renders the empty state (Music active, Clear filters). No seed is in Music, and only the unfiltered catalogue has more than one page.
+- Phase 09: `BlueBand` has a `clip` prop (default true). Search turns it off so the Courses menu can open past the band's bottom edge.
 - Phase 08 deviation, needs approval: the 404 numeral is Poppins 600 at **460px** (clamp(160px, 32vw, 460px)) with 0.02em tracking in its 480px box, not the spec's ~400px. On the screenshot the glyphs measure 882 wide with their top at y=225. At 400px they were 752 wide (diff 3.65 → 1.49).
 - Phase 08 open (decide in Phase 10): Figma disagrees with itself on course 2. Its card (Home, Search) reads 4.5 and Beginner, the detail header reads 4.8 (172 reviews) and Intermediate, and the Reviews tab says 4.7. The data keeps one `rating`/`level` at the card values (so Home is unchanged), with `reviewsCount` 172 and `ratingSummary.average` 4.7. Decide whether the detail header shows the card values, or course 2 moves to 4.8/Intermediate (which changes Home card 2).
 - Phase 08 copy kept verbatim from Figma, flagged for the owner: the creator bio has "[Creator's Name]" and "ive into" (missing D), the modules skip Module 3, the first review is wrapped in straight quotes, and the tab reads "Lesson" on one screen and "Lessons" on another (the site uses "Lessons").
@@ -95,6 +100,27 @@
 - `.gitignore` ends with a blanket `.claude` (a user change), which also ignores the commands, agents, hooks and figma kit. Confirm this is intended.
 
 ## Commit messages (suggested, one per phase; newest first)
+
+Phase 09 (not committed yet):
+
+```
+feat(search): build the /courses search page
+
+- Band: "Find Your Next Course", a GET search form (next/form, q plus
+  the active filters as hidden fields) and a lime "Courses" scope menu.
+  BlueBand gains a clip prop so the menu can open past the band.
+- Filter bar: Filter (learning paths), Level, Category and Sort menus
+  on native <details> (ui/Dropdown), all links to URL state. Nine
+  category chips spread over the column from xl, and a snapping
+  full-bleed scroller below it.
+- Results: 18 CourseCards in 3/2/1 columns, pagination with
+  aria-current and a #results jump, and an empty state with Clear
+  filters.
+- Data: coursesHref builds the search URLs; ?category=featured is the
+  full catalogue; searchCategories holds the chip row.
+- Every block lands on its Figma y at 1440 (page 3853 tall); 2.12%
+  against the scaled preview.
+```
 
 Phase 08 (not committed yet):
 
@@ -146,6 +172,8 @@ feat(home): responsive QA pass and sign-off
 ```
 
 ## Session log (newest first, one line each)
+
+- 2026-09-29: Phase 09 → 🟨. `/courses` built: SearchForm, FilterBar, CategoryTabs and Pagination (`src/components/search/`), `ui/Dropdown` (details menu), `coursesHref`/`searchCategories`, the featured fix, and BlueBand `clip`. At 1440 over CDP: h1 164, input (408,239) 462×52, filters at 432, chips 512, grid 632–3136, pagination 3208, footer 3328, height 3853. 2.12 against `screens/search.png` ×2.408. No overflow at 375/768/1024 with each menu open. The flow was checked in headless Edge: page 3 → Beginner → UI/UX chip → back/back/forward restores state, the search keeps the filters, and Clear filters works. The route no longer uses `Placeholder`.
 
 - 2026-09-29: Phase 08 → 🟨. Data: `Course` extended (fullTitle, subtitle, creatorSlug, category, reviewsCount, students, description, sneakPeek, keyPoints, curriculum, includes, modulesIntro, modules, lessonContent, progressText, reviewsIntro, ratingSummary, reviews) with the shared detail copy from the Figma trees, plus `creators.ts` and `getCourse`/`getCreator`/`listCourses`/`parseCourseQuery`. Routes: `/courses` (awaits searchParams, dynamic), the `/courses/[slug]` layout + About/Lessons/Reviews (SSG, `dynamicParams=false`, notFound, metadata), `/creators/[slug]`, and `(auth)` login/signup. Root title template "%s \| ByteSpace" + metadataBase. Footer "Become a Creator" → /signup. 404 built: 1.49 against the scaled preview, glyph within 1px of Figma; no overflow at 375 on any new route.
 

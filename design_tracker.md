@@ -16,7 +16,7 @@
 | 05  | Home: Features                        | `/phase-05-features`         | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; no side strips at 1920; 1280/1024 captured, 768/375 over CDP with no overflow); awaiting user review. Features 2.43 → 1.46; scales as the 1440 frame from lg (1.83 @1920, 1.84 @1280) |
 | 06  | Home: CTA and Testimonials            | `/phase-06-cta-testimonials` | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; 1280/1024/768/375 captured over CDP with no overflow); awaiting user review. cta+testimonials 2.72 → 1.08. From 1440 up the CTA scales like Figma (user request; 0.95 @1920). Commit message below |
 | 07  | Home: responsive and QA sign-off      | `/phase-07-home-qa`          | ✅     | 2026-09-29 | Home signed off: 2026-09-29, pending your review. All 6 bands ≤2 (mean 1.02); no overflow 375–2560; tap targets ≥44; tsc, lint and build clean. Commit message below |
-| 08  | Data model, routing and 404           | `/phase-08-routes`           | ⬜     |            |                                                                                                                                 |
+| 08  | Data model, routing and 404           | `/phase-08-routes`           | 🟨     | 2026-09-29 | Done (tsc, lint, build: 18 course + 1 creator routes SSG; unknown slugs 404; no overflow at 375); awaiting user review. 404 1.49 vs the scaled preview |
 | 09  | Search page `/courses`                | `/phase-09-search`           | ⬜     |            |                                                                                                                                 |
 | 10  | Course detail shell and About         | `/phase-10-course-about`     | ⬜     |            |                                                                                                                                 |
 | 11  | Lessons and Reviews tabs              | `/phase-11-course-tabs`      | ⬜     |            |                                                                                                                                 |
@@ -41,7 +41,9 @@
 | creator               |          |        |        |
 | login                 |          |        |        |
 | signup                |          |        |        |
-| 404                   |          |        |        |
+| 404                   |          | 1.49\* | ≤2     |
+
+\* Scored against `screens/not-found.png` scaled ×1.237 (`--ref`), because `screens/1440/not-found.png` doesn't exist yet. Re-score once it does.
 
 ## Decisions (from design_plan.md §9; record changes here)
 
@@ -54,6 +56,12 @@
 - home/footer: the newsletter button reads "Subscribe", not Figma's "Search" (copied from the hero; the label should say what it does). footer 0.45 → 0.52. Approved 2026-09-29.
 
 ## Blockers and open questions
+- Phase 08 deviation, needs approval: the 404 numeral is Poppins 600 at **460px** (clamp(160px, 32vw, 460px)) with 0.02em tracking in its 480px box, not the spec's ~400px. On the screenshot the glyphs measure 882 wide with their top at y=225. At 400px they were 752 wide (diff 3.65 → 1.49).
+- Phase 08 open (decide in Phase 10): Figma disagrees with itself on course 2. Its card (Home, Search) reads 4.5 and Beginner, the detail header reads 4.8 (172 reviews) and Intermediate, and the Reviews tab says 4.7. The data keeps one `rating`/`level` at the card values (so Home is unchanged), with `reviewsCount` 172 and `ratingSummary.average` 4.7. Decide whether the detail header shows the card values, or course 2 moves to 4.8/Intermediate (which changes Home card 2).
+- Phase 08 copy kept verbatim from Figma, flagged for the owner: the creator bio has "[Creator's Name]" and "ive into" (missing D), the modules skip Module 3, the first review is wrapped in straight quotes, and the tab reads "Lesson" on one screen and "Lessons" on another (the site uses "Lessons").
+- Phase 08 data notes: `?category=` accepts a chip slug, a learning-path slug (mapped to chip slugs in `pathCategories`) or `featured` (everything). With no filter, `listCourses` repeats the 6 seeds 15× to fill Figma's 5 pages of 18. Filters return unique matches. `metadataBase` reads `NEXT_PUBLIC_SITE_URL` (falls back to localhost:3000), so set it on deploy. The creator, reviewer and sneak-peek image paths point at `npm run assets` outputs that wait on the manual export.
+- Phase 08 skeletons: `ui/Placeholder` marks unbuilt bodies. Delete it once Phases 09–13 replace every use. The course layout owns the band and the tab nav (`NavLink`, `aria-current`), and each tab page is only its tab body. `(auth)/layout` owns the full-screen band (auth header, no footer).
+- Phase 08 tip: stopping a background `npx next start` can leave the `next` child listening. It then serves the old build's HTML against new chunks (a 37.9% diff). Free the port (`netstat -ano`, then Stop-Process) before restarting.
 - Phase 06 deviation, needs approval: Figma gives card 1's name ("Sarah M.") a 24px box, while cards 2–3 use 28px, so card 1 is 432 tall instead of 436. The site uses `type-heading-xs` (28) on all three, so card 1 is 436 and its role and quote sit 4px lower than in Home.png. Approve this, or ask for the Figma quirk to be matched.
 - Phase 06 ornament positions were fitted on Home.png with a ±5px search over a synthetic blueprint. They are 1px off the image-rect offsets: spring-a (-121,-161), the mirrored spring (179,5; frame x 353 is its right edge), cone (-49,225), torus (17,299), pyramid (1078,0), spring-b (1108,289), cylinder (1222,6).
 - Phase 06 layering: the CTA copy sits above the ornaments (z-10), while Figma draws the ornaments on top. Nothing overlaps at 1440, so it looks the same, and the copy stays readable where shapes come close at 1024.
@@ -88,6 +96,26 @@
 
 ## Commit messages (suggested, one per phase; newest first)
 
+Phase 08 (not committed yet):
+
+```
+feat(routes): data model, route skeletons and the 404 page
+
+- Data: extend Course with the detail, lessons and reviews copy from
+  Figma (course 2's copy is shared by all six), add creators.ts, and
+  add getCourse, getCreator, listCourses (q, category or learning path,
+  level, sort, 18 per page; the unfiltered catalogue repeats the seeds
+  to fill 5 pages) and parseCourseQuery.
+- Routes: /courses, /courses/[slug] (a layout with the band and tabs,
+  plus About, Lessons and Reviews), /creators/[slug], and an (auth)
+  group for /login and /signup without a footer. Course and creator
+  routes are statically generated, and unknown slugs return 404.
+- Metadata: metadataBase and a "%s | ByteSpace" title template.
+- 404: blueprint band, a 460px lime-to-blue "404" behind the copy, and
+  a Back to Home button (1.49% against the scaled Figma preview).
+- Footer: "Become a Creator" links to /signup.
+```
+
 Phase 07 (not committed yet; Phase 06 went in as c367cb5):
 
 ```
@@ -118,6 +146,8 @@ feat(home): responsive QA pass and sign-off
 ```
 
 ## Session log (newest first, one line each)
+
+- 2026-09-29: Phase 08 → 🟨. Data: `Course` extended (fullTitle, subtitle, creatorSlug, category, reviewsCount, students, description, sneakPeek, keyPoints, curriculum, includes, modulesIntro, modules, lessonContent, progressText, reviewsIntro, ratingSummary, reviews) with the shared detail copy from the Figma trees, plus `creators.ts` and `getCourse`/`getCreator`/`listCourses`/`parseCourseQuery`. Routes: `/courses` (awaits searchParams, dynamic), the `/courses/[slug]` layout + About/Lessons/Reviews (SSG, `dynamicParams=false`, notFound, metadata), `/creators/[slug]`, and `(auth)` login/signup. Root title template "%s \| ByteSpace" + metadataBase. Footer "Become a Creator" → /signup. 404 built: 1.49 against the scaled preview, glyph within 1px of Figma; no overflow at 375 on any new route.
 
 - 2026-09-29: Scroll performance. The user reported laggy scrolling and a slow tab switch. On a GT 730, a full scroll of `/` had frames of up to 1.59s (p95 370ms). The main cause was the 8-layer `drop-shadow-float` filter; the blurred glow SVGs and the FloatingCard backdrop blur added to it. Shadow A is now baked by `bakeShadow` in build-assets (`hero/student-shadow.webp`, `features/creator-photo-shadow.webp`) and drawn with `FloatShadow`. `Glow` is a CSS radial gradient on the Figma ellipse box (the 20px blur is dropped). FloatingCard's invisible backdrop blur is gone, and the `drop-shadow-float` utility is removed. Now the worst frame is 20ms at 1440 and 1920 with no frames over 25ms. Home 1440 diff: 0.94/0.96/1.10/1.06/1.06/0.52, mean 0.94. The glow SVGs in `public/images/svg` are no longer used.
 

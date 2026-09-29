@@ -44,8 +44,9 @@ export const footerColumns: { heading?: string; links: NavLink[] }[] = [
   {
     heading: "Platform",
     links: [
-      { label: "Become a Creator", href: "/#creators" },
+      { label: "Become a Creator", href: "/signup" },
       { label: "Affiliate Program", href: "#" },
+      // /contact is not in Figma yet.
       { label: "Contact", href: "#" },
       { label: "Help", href: "#" },
       { label: "About", href: "#" },

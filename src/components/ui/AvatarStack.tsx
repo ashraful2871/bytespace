@@ -16,7 +16,7 @@ type AvatarStackProps = {
 
 const bubbles = {
   lime: "bg-secondary-400 text-neutral-950",
-  dark: "bg-black text-white",
+  dark: "bg-neutral-950 text-white",
 };
 
 export default function AvatarStack({

@@ -12,9 +12,9 @@
 | 01  | Design tokens and UI primitives       | `/phase-01-tokens`           | 🟨     | 2026-09-28 | Done (tsc, lint, build, diff pass); awaiting user review. Logo wordmark and Facebook/Google icons wait on the manual export     |
 | 02  | Shell: Header, MobileNav, Footer      | `/phase-02-shell`            | 🟨     | 2026-09-28 | Done (tsc, lint, build, diff pass; keyboard and 375 checked over CDP); awaiting user review. Header strip (y 0–120) 0.41 → 0.37 |
 | 03  | Home: Hero                            | `/phase-03-hero`             | 🟨     | 2026-09-28 | Done (tsc, lint, build, diff pass; offsets ≤2px; 1280/1024/768/375 checked over CDP); awaiting user review. Hero 1.35 → 1.02 |
-| 04  | Home: Brands, Courses, Learning Paths | `/phase-04-courses`          | ⬜     |            |                                                                                                                                 |
-| 05  | Home: Features                        | `/phase-05-features`         | ⬜     |            |                                                                                                                                 |
-| 06  | Home: CTA and Testimonials            | `/phase-06-cta-testimonials` | ⬜     |            |                                                                                                                                 |
+| 04  | Home: Brands, Courses, Learning Paths | `/phase-04-courses`          | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; sections land on exact Figma y; 1280/1024/768/375 checked over CDP); awaiting user review. Brands still on crops (no SVG export) |
+| 05  | Home: Features                        | `/phase-05-features`         | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; no side strips at 1920; 1280/1024 captured, 768/375 over CDP with no overflow); awaiting user review. Features 2.43 → 1.46; scales as the 1440 frame from lg (1.83 @1920, 1.84 @1280) |
+| 06  | Home: CTA and Testimonials            | `/phase-06-cta-testimonials` | 🟨     | 2026-09-29 | Done (tsc, lint, build, diff pass; 1280/1024/768/375 captured over CDP with no overflow); awaiting user review. cta+testimonials 2.72 → 1.08. From 1440 up the CTA scales like Figma (user request; 0.95 @1920). Commit message below |
 | 07  | Home: responsive and QA sign-off      | `/phase-07-home-qa`          | ⬜     |            |                                                                                                                                 |
 | 08  | Data model, routing and 404           | `/phase-08-routes`           | ⬜     |            |                                                                                                                                 |
 | 09  | Search page `/courses`                | `/phase-09-search`           | ⬜     |            |                                                                                                                                 |
@@ -29,10 +29,10 @@
 | Page / section        | Baseline | Latest | Status |
 | --------------------- | -------- | ------ | ------ |
 | home/hero             | 1.35     | 1.02   | ≤2     |
-| home/brands+courses   | 1.09     | 1.09   | ≤2     |
-| home/grid+paths       | 1.59     | 1.59   | ≤2     |
-| home/features         | 2.46     | 2.46   | over   |
-| home/cta+testimonials | 2.73     | 2.72   | over   |
+| home/brands+courses   | 1.09     | 0.93   | ≤2     |
+| home/grid+paths       | 1.59     | 1.09   | ≤2     |
+| home/features         | 2.46     | 1.46   | ≤2     |
+| home/cta+testimonials | 2.73     | 1.08   | ≤2     |
 | home/footer           | 0.49     | 0.45   | ≤2     |
 | search                |          |        |        |
 | course/about          |          |        |        |
@@ -52,6 +52,19 @@
 - (none yet). Format: `<page/section>: <what differs> (<why>), approved <date>`
 
 ## Blockers and open questions
+- Phase 06 deviation, needs approval: Figma gives card 1's name ("Sarah M.") a 24px box, while cards 2–3 use 28px, so card 1 is 432 tall instead of 436. The site uses `type-heading-xs` (28) on all three, so card 1 is 436 and its role and quote sit 4px lower than in Home.png. Approve this, or ask for the Figma quirk to be matched.
+- Phase 06 ornament positions were fitted on Home.png with a ±5px search over a synthetic blueprint. They are 1px off the image-rect offsets: spring-a (-121,-161), the mirrored spring (179,5; frame x 353 is its right edge), cone (-49,225), torus (17,299), pyramid (1078,0), spring-b (1108,289), cylinder (1222,6).
+- Phase 06 layering: the CTA copy sits above the ornaments (z-10), while Figma draws the ornaments on top. Nothing overlaps at 1440, so it looks the same, and the copy stays readable where shapes come close at 1024.
+- Phase 06 decision (user, 2026-09-29): at 1920 the CTA shapes sat inside the centred 1440 frame, and the user wants them on the screen edges as in Figma. From 1440 up, the CTA now scales its whole frame (grid, shapes and copy) with `min-[1440px]:zoom-frame`, scoring 0.95% at 1920 and 1.03% at 1899 against Figma scaled to width. Below 1440 it keeps 1440px sizes and crops the edge shapes instead of shrinking the copy, unlike Features, which scales from lg. At 768 the shapes all fall outside the viewport. The Hero and Testimonials still use the fixed column at 1920.
+- Phase 06 Testimonials from lg: the title shrinks to no less than 480px (it stays on two lines), and the paragraph takes the rest of the row.
+- Phase 06 mobile heading sizes: the CTA H2 is 32px/1.25 below md, as its spec says. The Testimonials H2 uses 30px/1.25, the SectionHeader convention. Unify them in Phase 07 if wanted.
+- CLAUDE.md still lists `cta-shapes.png` (and the category icons and creator illustration, removed in 04/05) among the Home.png crops. Fix it with `/update-context` or in Phase 14.
+- ⛔ Phase 04 DoD gap: `public/images/svg/brands/` doesn't exist, so Brands still uses PNG crops. They were re-cut from Home.png to the exact 1:1708 frame boxes (167/168/170/170×41, 169×42). Swap in `brand-1..5.svg` (same sizes) and delete `public/images/brands/` once `npm run assets` copies them. Thumbnails 2–6 also stay on the 1x crops (`course-N.png`) until thumb-2..6 land. Only course 1 is `.webp`.
+- Phase 04 rounding: SectionHeader rounds line heights from md to Figma's frame heights (heading-m 53px, title 43px, body-l 29px), and the CourseCard by-line is 19px, not 19.2. Without this, sub-pixel boxes shifted every section below Courses up by 1px (features 3119.02).
+- Phase 04 icon fix: Business is `rounded/domain` (Figma 12:166 is Style=Round). IT stays `outlined/computer`; Figma's glyph is just heavier (svg-400 only).
+- Phase 05 spring offsets: the Features ornament image rects sit 2px left of their frames, so the springs are at (404,67) and (303,114), matching the Phase 03 convention.
+- Phase 05 decision (user, 2026-09-29): from lg (1024) up, Features renders as the 1440 Figma frame scaled to the window (`zoom-frame` utility: zoom = 100cqw/1440px, parent `@container`), so it fills wide screens like Figma. Below lg the rows stack. Phase 07: consider the same for the other sections, which still use the fixed 1200 column.
+- Phase 04 tip: after replacing a file in `public/images` under the same name, delete `.next/dev/cache/images`. Otherwise the dev image optimizer keeps serving the old file (the brand crops rendered at the old 176×50 ratio).
 
 - Figma MCP call limit reached on the Starter plan (2026-09-28). Phases must work from pre-captured specs and manual exports.
 - ⛔ Manual Figma export not done yet (`.claude/figma/assets/manual/` and `.claude/figma/screens/1440/` are missing). Missing: the 1440 refs for every non-home page (`npm run diff <page>` exits until they exist) · logo-light/dark.svg · brand-1..5.svg · icon-design/facebook/google.svg · thumb-2..6 · video-thumb · sneak-1..4 · creator-purepearl/creator-sm · reviewer-1..4 · auth-\*. `npm run assets` picks them up once they are saved.
@@ -67,8 +80,35 @@
 - Phase 01 spec fix: `bg-blueprint` uses `calc(50% - 660px)`, not `50% - 720px`. A background-position percentage is relative to (width − 120px tile), so −660 puts the lines at frame x=0 mod 120 (checked at 1440 → 0 and 1920 → 240).
 - `.gitignore` ends with a blanket `.claude` (a user change), which also ignores the commands, agents, hooks and figma kit. Confirm this is intended.
 
+## Commit messages (suggested, one per phase; newest first)
+
+Phase 06 (not committed yet):
+
+```
+feat(home): rebuild CTA and Testimonials to match Figma
+
+- CTA: real DOM on bg-blueprint (488px tall from md) with the content
+  centred and 40px gaps, and the 7 tinted ornaments placed in a
+  design-stage at positions fitted on Home.png. This replaces the
+  flattened cta-shapes.png background. From 1440 up, the whole frame
+  scales to the window (zoom-frame), so the shapes stay on the screen
+  edges as in Figma.
+- Testimonials: the three Figma glow SVGs in a design-stage, a
+  577/43/580 header row, and 374px cards (41px gap, items-start) built
+  as figure > figcaption + blockquote, with WebP avatars.
+- Remove the unused cta-shapes.png and testimonials/*.png crops.
+- Visual diff for cta+testimonials: 2.72% -> 1.08%.
+```
+
 ## Session log (newest first, one line each)
 
+- 2026-09-29: Phase 06 follow-up. The user saw the CTA shapes inset from the edges at 1899. From 1440 up, the CTA frame now scales to the window (`@container` section, `min-[1440px]:zoom-frame` inner frame carrying bg-blueprint). 1920 0.95% and 1899 1.03% against scaled Figma; 1440 unchanged (1.08); 1280/1024/768/375 unchanged with no overflow.
+
+- 2026-09-29: Phase 06 → 🟨. CTA rebuilt: bg-blueprint (grid lines already match Home.png at y≡118 and x≡0), 964×319 content at top 85 via `md:pt-px` + justify-center, H2 at 53px line height, and the default primary ButtonLink (172×46). 7 Ornaments shown from md. Testimonials: glows at their native boxes (-40 offset), content at x=118 (`lg:-mx-0.5`), grid cards (1/2/3 columns), avatar `alt=""` (the name follows), valid figcaption. Removed cta-shapes.png and the testimonial PNGs. cta+testimonials 1.08, home mean 1.01.
+
+- 2026-09-29: Phase 05 follow-up. The user saw extra side space at 1920, so Features now scales the whole 1440 frame to the window from lg (`zoom-frame` in globals.css). The lg zoom .75 and flex-1 column logic are gone. 1440 unchanged (1.46); 1920 1.83, 1280 1.84 against the scaled ref; no overflow from 375 to 1920.
+- 2026-09-29: Phase 05 → 🟨. Features rebuilt as real DOM: Glow SVGs in a design-stage (native boxes at -548,-505 and -327,906; they fade into surface past 1440, so no extra gradient needed), rows at 120/72/120 with the content frame reaching 59px into the right gutter at xl, PathVisual (relaxed CourseCard, student.webp, ProgressCard) and CreatorVisual (revenue and YTD cards, cropped creator-photo, HappyStudentsCard, springs). ProgressCard and HappyStudentsCard gained `variant="relaxed"`. Visuals zoom .5–.58 / .9–1 / .75 below xl. Removed features/creator.png, student.png, spring-lime.png and the radial-gradient array. features 1.46.
+- 2026-09-29: Phase 04 → 🟨. Brands (exact-box crops, 202 tall), SectionHeader (gap 16, type-* with integer line heights, text-balance), Chip links `/courses?category=<slug>` in 3 rows at xl, CourseCard rebuilt (stretched link, glass Pills with a container-query tight mode below 335px, level pill, rating in the title row, `relaxed` variant not wired yet), 373px grid columns, Learning Paths on generated icons linking to categories. Data: slugs plus `categories`. Removed the categories/*.png and learner-*.png crops. brands+courses 0.93, grid+paths 1.09.
 - 2026-09-28: Phase 03 → 🟨. Hero rebuilt: flex text block (top 169, gaps 32/60), `form role=search action=/courses`, lime-arc.svg ring, student.webp with drop-shadow-float, FloatingCards on FloatingCard/ProgressBar/StarIcon with the happy-*.webp avatars, 6 Ornaments in a design-stage (md+). The visual is a 1150×512 sub-stage: absolute at lg+, zoom .31/.54/.64 below. The lucide imports and the hero/*.png and avatars/student-*.png crops are gone. Hero 1.02%.
 - 2026-09-28: Phase 01 → 🟨. Tokens (track/violet, radii, shadow-float + drop-shadow-float, 18 type-\* utilities, fluid container, design-stage, frame-locked blueprint), 27 generated icons, and the primitives Button/Chip/Pill/ProgressBar/Logo/AvatarStack/FloatingCard/Ornament/Glow/RatingStars. Scratch route screenshotted and deleted. Diff mean unchanged (1.62).
 - 2026-09-28: Phase 00 → 🟨. Added `npm run assets` (sharp; 41 outputs: 14 tinted ornaments, WebP photos/avatars, SVGs) and `npm run diff` (headless Edge, 6 home bands; mean 1.62%, with features and cta+testimonials over 2%). Fixed the design-context and design-reviewer docs. S12 passes. The manual export is still pending.

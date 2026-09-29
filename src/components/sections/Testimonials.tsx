@@ -1,51 +1,56 @@
 import Image from "next/image";
+import Glow from "@/components/ui/Glow";
 import { testimonials } from "@/data/testimonials";
 
-const glow = [
-  "radial-gradient(ellipse 330px 300px at 720px 200px, rgb(212 251 32 / 0.6), rgb(212 251 32 / 0.25) 50%, transparent 100%)",
-  "radial-gradient(ellipse 360px 420px at 1440px 290px, rgb(212 251 32 / 0.45), rgb(212 251 32 / 0.15) 55%, transparent 100%)",
-  "radial-gradient(ellipse 460px 420px at 90px 760px, rgb(0 59 226 / 0.23), rgb(0 59 226 / 0.08) 55%, transparent 100%)",
-].join(", ");
-
+// Figma 34:1175 Testimonials_Frame: 1440×784 (74 top, 57 bottom). The 1204-wide content frame starts at x=118,
+// 2px outside the 1200 column on each side, so the three 374px cards are 41 apart.
 export default function Testimonials() {
   return (
     <section className="relative overflow-hidden bg-surface">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-1/2 w-[1440px] -translate-x-1/2"
-        style={{ backgroundImage: glow }}
-      />
+      {/* The glow SVGs carry a 40px blur bleed, so each native box sits 40px up-left of its Figma ellipse
+        (right 842,-241 · centre 395,-138 · left -442,149). Later ones paint on top, as in Figma. */}
+      <div aria-hidden className="design-stage">
+        <Glow src="/images/svg/testimonials-glow-right.svg" x={802} y={-281} size={1217} />
+        <Glow src="/images/svg/testimonials-glow-center.svg" x={355} y={-178} size={752} />
+        <Glow src="/images/svg/testimonials-glow-left.svg" x={-482} y={109} size={1217} />
+      </div>
 
-      <div className="relative container-page pt-16 pb-16 md:pt-[74px] md:pb-[61px]">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <h2 className="font-poppins text-[32px]/[1.25] font-semibold text-black md:text-display lg:mt-10">
-            Discover What Our
-            <br className="hidden md:block" /> Community Is Saying
-          </h2>
-          <p className="text-base leading-[1.6] text-body md:text-lg md:leading-[29px] lg:w-[582px]">
-            At ByteSpace, our vibrant community of learners and creators is at the heart of what we
-            do. Hear directly from those who have experienced the transformative journey of
-            learning and creating on our platform. Explore testimonials that reflect the diverse
-            perspectives of enthusiastic learners and accomplished creators.
-          </p>
+      <div className="relative container-page py-16 md:pt-[74px] md:pb-[57px]">
+        <div className="flex flex-col gap-12 md:gap-[72px] lg:-mx-0.5">
+          {/* Figma 34:1177: 577 + 43 + 580 = 1200. Below 1200 both shrink, the title no further than its two lines. */}
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:gap-[43px]">
+            <h2 className="max-w-[577px] type-heading-m text-black max-md:text-[30px]/[1.25] md:leading-[53px] lg:flex-[0_1_577px] lg:min-w-[480px]">
+              Discover What Our Community Is Saying
+            </h2>
+            <p className="type-body-l text-body max-md:text-base md:leading-[29px] lg:flex-[0_1_580px]">
+              At ByteSpace, our vibrant community of learners and creators is at the heart of what we do. Hear directly
+              from those who have experienced the transformative journey of learning and creating on our platform.
+              Explore testimonials that reflect the diverse perspectives of enthusiastic learners and accomplished
+              creators.
+            </p>
+          </div>
+
+          {/* Figma 34:1182: items-start, so each card is as tall as its quote. */}
+          <ul className="grid items-start gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-[41px]">
+            {testimonials.map((t) => (
+              <li key={t.name}>
+                <figure className="flex flex-col gap-6 rounded-card bg-white p-6">
+                  <figcaption className="flex flex-col gap-6">
+                    <Image src={t.avatar} alt="" width={80} height={80} className="size-20 rounded-full object-cover" />
+                    <div>
+                      <p className="type-heading-xs text-black">{t.name}</p>
+                      <p className="type-body-l text-primary-800 md:leading-[29px]">{t.role}</p>
+                    </div>
+                  </figcaption>
+                  {/* Straight quotes, as in Figma. */}
+                  <blockquote className="type-body-l text-body max-md:text-base md:leading-[29px]">
+                    &quot;{t.quote}&quot;
+                  </blockquote>
+                </figure>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        <ul className="mt-12 grid items-start gap-6 md:mt-[71px] md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-          {testimonials.map((t) => (
-            <li key={t.name}>
-              <figure className="rounded-[20px] bg-white p-6">
-                <Image src={t.avatar} alt={t.name} width={80} height={80} className="rounded-full" />
-                <figcaption className="mt-[25px]">
-                  <p className="font-poppins text-xl leading-[30px] font-semibold text-black">{t.name}</p>
-                  <p className="text-lg leading-6 text-primary-800">{t.role}</p>
-                </figcaption>
-                <blockquote className="mt-[22px] text-lg leading-[29px] text-body">
-                  &quot;{t.quote}&quot;
-                </blockquote>
-              </figure>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );

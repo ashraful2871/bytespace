@@ -1,10 +1,6 @@
 export type Level = "Beginner" | "Intermediate" | "Advanced";
 
-export type IncludeIcon =
-  | "article"
-  | "videocam"
-  | "workspace-premium"
-  | "support-agent";
+export type IncludeIcon = "topic" | "videocam" | "badge" | "consultation";
 
 export type Review = {
   name: string;
@@ -34,7 +30,9 @@ export type Course = {
   reviewsCount: number;
   students: number;
   description: string[];
-  sneakPeek: string[];
+  sneakPeek: { src: string; alt: string }[];
+  /** Sidebar copy above the price. */
+  enrollText: string;
   keyPoints: string[];
   curriculum: {
     lessons: number;
@@ -153,7 +151,14 @@ const detail = {
     "In the initial modules, you'll establish a solid foundation by immersing yourself in the foundational concepts that form the backbone of digital asset creation. Understand the fundamental elements that constitute compelling digital content and gain proficiency in leveraging these elements to communicate effectively in the digital realm.",
     "As you progress through the course, you'll ascend to higher levels of expertise, delving into the nuances of design principles that drive impactful creations. Uncover the secrets behind effective visual communication, exploring color theory, typography, and layout strategies that elevate your digital assets to new heights. Engage in hands-on exercises that reinforce your understanding, allowing you to apply these principles in practical scenarios.",
   ],
-  sneakPeek: [1, 2, 3, 4].map((n) => `/images/course/sneak-${n}.webp`),
+  sneakPeek: [
+    "Hand sketching wireframes on paper",
+    "Laptop showing a design dashboard",
+    "Desk with a plant and screens of UI work",
+    "Two phones showing colourful app screens",
+  ].map((alt, i) => ({ src: `/images/course/sneak-${i + 1}.webp`, alt })),
+  enrollText:
+    "Ready to Dive In? Enroll Now and Start Building Your Digital Future!",
   keyPoints: [
     "Foundational Concepts",
     "Design Principles Mastery",
@@ -175,10 +180,10 @@ const detail = {
     more: 99,
   },
   includes: [
-    { icon: "article", label: "Learning Resources" },
+    { icon: "topic", label: "Learning Resources" },
     { icon: "videocam", label: "Quality Lesson Videos" },
-    { icon: "workspace-premium", label: "Certificate of Completion" },
-    { icon: "support-agent", label: "Private Consultation" },
+    { icon: "badge", label: "Certificate of Completion" },
+    { icon: "consultation", label: "Private Consultation" },
   ],
   modulesIntro:
     "Immerse yourself in the course content as we break down each module into comprehensive lessons, providing practical insights and hands-on experiences.",
@@ -257,9 +262,8 @@ const detail = {
   ],
 } satisfies Partial<Course>;
 
-type Seed = Pick<Course, "slug" | "title" | "category" | "image"> & {
-  fullTitle?: string;
-};
+type Seed = Pick<Course, "slug" | "title" | "category" | "image"> &
+  Partial<Pick<Course, "fullTitle" | "rating" | "level">>;
 
 const seeds: Seed[] = [
   {
@@ -272,6 +276,9 @@ const seeds: Seed[] = [
     slug: "build-digital-asset",
     title: "Build Digital Asset",
     fullTitle: "Build Digital Asset: A Comprehensive Guide",
+    // The detail header's values (55:4189); Figma's cards all repeat 4.5 and Beginner.
+    rating: 4.8,
+    level: "Intermediate",
     category: "graphic-design",
     image: "/images/courses/course-2.png",
   },

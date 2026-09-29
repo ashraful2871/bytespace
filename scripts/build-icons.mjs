@@ -29,9 +29,10 @@ const symbols = [
   ["PlayArrow", "outlined", "play_arrow", true],
   ["Videocam", "outlined", "videocam"],
   ["Group", "outlined", "group"],
-  ["Article", "outlined", "article"],
-  ["WorkspacePremium", "outlined", "workspace_premium"],
-  ["SupportAgent", "outlined", "support_agent"],
+  // Course "includes" list, matched against the course-details preview (the plan guessed article,
+  // workspace_premium and support_agent). Private Consultation reuses ConnectWithoutContact.
+  ["Topic", "outlined", "topic"],
+  ["Badge", "outlined", "badge"],
   // Category icons, matched against the Home.png category crops (removed in Phase 04).
   ["Computer", "outlined", "computer"], // IT & Software
   ["Domain", "rounded", "domain"], // Business (the plan guessed business_center; Figma 12:166 is Style=Round)

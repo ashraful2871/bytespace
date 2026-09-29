@@ -18,7 +18,7 @@
 | 07  | Home: responsive and QA sign-off      | `/phase-07-home-qa`          | ✅     | 2026-09-29 | Home signed off: 2026-09-29, pending your review. All 6 bands ≤2 (mean 1.02); no overflow 375–2560; tap targets ≥44; tsc, lint and build clean. Commit message below |
 | 08  | Data model, routing and 404           | `/phase-08-routes`           | 🟨     | 2026-09-29 | Done (tsc, lint, build: 18 course + 1 creator routes SSG; unknown slugs 404; no overflow at 375); awaiting user review. 404 1.49 vs the scaled preview |
 | 09  | Search page `/courses`                | `/phase-09-search`           | 🟨     | 2026-09-29 | Done (tsc, lint, build; every block lands on its Figma y, page 3853 tall; no overflow at 375/768/1024 with any menu open); awaiting user review. 2.12 vs the scaled preview |
-| 10  | Course detail shell and About         | `/phase-10-course-about`     | ⬜     |            |                                                                                                                                 |
+| 10  | Course detail shell and About         | `/phase-10-course-about`     | 🟨     | 2026-09-30 | Done (tsc, lint, build; every block lands on its Figma y except the D3 tabs; no overflow at 375/768/1024/1280; tabs keep the layout mounted); awaiting user review. 2.92 with D3, 1.51 at Figma's tab offset (scaled preview). Images are preview stand-ins |
 | 11  | Lessons and Reviews tabs              | `/phase-11-course-tabs`      | ⬜     |            |                                                                                                                                 |
 | 12  | Creator profile                       | `/phase-12-creator`          | ⬜     |            |                                                                                                                                 |
 | 13  | Auth: Login and Register              | `/phase-13-auth`             | ⬜     |            |                                                                                                                                 |
@@ -30,12 +30,12 @@
 | --------------------- | -------- | ------ | ------ |
 | home/hero             | 1.35     | 1.02   | ≤2     |
 | home/brands+courses   | 1.09     | 0.96   | ≤2     |
-| home/grid+paths       | 1.59     | 1.10   | ≤2     |
+| home/grid+paths       | 1.59     | 1.17   | ≤2     |
 | home/features         | 2.46     | 1.46   | ≤2     |
 | home/cta+testimonials | 2.73     | 1.08   | ≤2     |
 | home/footer           | 0.49     | 0.52   | ≤2     |
 | search                |          | 2.12\* | ≈2     |
-| course/about          |          |        |        |
+| course/about          |          | 2.92\* | ≤2 ex-D3 (1.51) |
 | course/lessons        |          |        |        |
 | course/reviews        |          |        |        |
 | creator               |          |        |        |
@@ -43,7 +43,7 @@
 | signup                |          |        |        |
 | 404                   |          | 1.49\* | ≤2     |
 
-\* Scored against the 598px previews scaled to 1440 (`--ref`): `screens/not-found.png` ×1.237 and `screens/search.png` ×2.408 (the blur of a 2.4× upscale costs most of search's 2.12; its geometry matches the tree to the pixel). The `screens/1440/*` exports don't exist yet. Re-score once they do.
+\* Scored against the 598px previews scaled to 1440 (`--ref`): `screens/not-found.png` ×1.237 and `screens/search.png` ×2.408 (the blur of a 2.4× upscale costs most of search's 2.12; its geometry matches the tree to the pixel). course/about uses the 848px `screens/course-details.png` ×1.698: 2.92 as built, where the D3 tab shift doubles everything below y=1020, and 1.51 with the tabs temporarily at Figma's 63px offset (the DoD's "excluding D3" score). The `screens/1440/*` exports don't exist yet. Re-score once they do.
 
 ## Decisions (from design_plan.md §9; record changes here)
 
@@ -54,6 +54,7 @@
 - Format: `<page/section>: <what differs> (<why>), approved <date>`
 - home/courses+paths and hero: the SectionHeader intro copy and the hero search placeholder use `neutral-500` (#666973), not Figma's `neutral-400` (#82868e is 3.65:1 on white and fails WCAG AA; this is 5.5:1). brands+courses 0.93 → 0.96, grid+paths 1.09 → 1.10. Approved 2026-09-29.
 - home/footer: the newsletter button reads "Subscribe", not Figma's "Search" (copied from the hero; the label should say what it does). footer 0.45 → 0.52. Approved 2026-09-29.
+- course/about (D3): the tab row sits 78px below the band (y=1035), not Figma's 63 (y=1020), to match Lessons and Reviews. Everything below moves 15px down, so the footer is at 2207 and the page is 2732 tall. Diff 1.51 → 2.92 against the scaled preview. Approved as D3.
 
 ## Blockers and open questions
 - Phase 09 deviations, need approval: (1) pagination is centred (564–876) as the spec says, but Figma's box sits at x=588, 25px right of centre. (2) At page 1, Prev (and Next on the last page) is a grey (`neutral-300`), non-link arrow; Figma draws Prev dark on page 1. (3) The search placeholder uses `neutral-500`, following the approved hero deviation (Figma `neutral-400`). (4) The current page number follows Figma in `neutral-300` (#abaeb5, about 2.2:1 on white, below AA). It's announced as `aria-current="page"`, but confirm that the owner wants the grey number and not a highlighted one.
@@ -62,7 +63,12 @@
 - Phase 09 data: `?category=featured` now returns the full 90-course catalogue (it used to give the 6 filtered seeds, so Home's Featured chip landed on one page). `coursesHref(query, patch)` builds every search link, resets the page on any filter change and leaves out the defaults. Filters return unique seed matches, so `?category=music&page=2` renders the empty state (Music active, Clear filters). No seed is in Music, and only the unfiltered catalogue has more than one page.
 - Phase 09: `BlueBand` has a `clip` prop (default true). Search turns it off so the Courses menu can open past the band's bottom edge.
 - Phase 08 deviation, needs approval: the 404 numeral is Poppins 600 at **460px** (clamp(160px, 32vw, 460px)) with 0.02em tracking in its 480px box, not the spec's ~400px. On the screenshot the glyphs measure 882 wide with their top at y=225. At 400px they were 752 wide (diff 3.65 → 1.49).
-- Phase 08 open (decide in Phase 10): Figma disagrees with itself on course 2. Its card (Home, Search) reads 4.5 and Beginner, the detail header reads 4.8 (172 reviews) and Intermediate, and the Reviews tab says 4.7. The data keeps one `rating`/`level` at the card values (so Home is unchanged), with `reviewsCount` 172 and `ratingSummary.average` 4.7. Decide whether the detail header shows the card values, or course 2 moves to 4.8/Intermediate (which changes Home card 2).
+- Phase 10 spec corrections (measured over CDP and on the preview): (1) the 16px copy (lesson minutes, "99 more videos", enroll and creator copy, includes, the About paragraphs and key points) sits on **26px** lines (Figma boxes 26/52, description 416 = 16 × 26), so it's `type-body-m leading-[26px]`, not body-m's 24. (2) The subtitle is **Poppins 500 20/24** (renders 577 wide against Figma's 571; Satoshi label-xl is 527, even 700 is 544). (3) Share's label is **16px on a 24px line** (Figma 42×24; label-l renders 46), so the button is 122 wide. (4) "See Full Profile" is `type-label-m` (19 tall, renders 107 wide as in Figma), not label-s, in `neutral-700`. (5) The title isn't capped at 769: Poppins renders it at 775 and it wrapped. (6) The play button isn't centred: Figma's 104px square is at (323,203) in the video, centred at 52.1% × 53.2%, with a 48px white circle. (7) The includes icons are `topic`, `videocam`, `badge` and `connect_without_contact` (matched on the preview; the plan's article, workspace_premium and support_agent are gone from the icon list). (8) The About paragraphs are 26px apart (a blank line in one text box).
+- Phase 10 geometry: the course shell is one full-bleed grid (`courses/[slug]/layout.tsx`). The band spans the Header, title block and video rows with `-mb-[62px]`, so it ends 62 below the video at every width (957 at 1440). The last row is `1fr`, so the sidebar (spanning the video and tab rows) never stretches the video row. The title block sits at x=122 and the video at x=125 (`xl:ml-0.5`, `xl:ml-[5px]`), as in Figma. Share hangs 85px past the column from 1440 (D4). The card uses `p-[39px]` inside its 1px border, so its content is at Figma's 40. Below lg it stacks header, video, sidebar (24 below the video, straddling the band edge), tabs and content.
+- Phase 10 copy kept verbatim from Figma, flagged for the owner: "This course include", "Sneak Peak", and the creator blurb in the sidebar repeats the enroll copy (`creator.blurb`).
+- Phase 10 stubs: Share is a static `<button>` (it needs a client handler: navigator.share or copy link), the play button has no player, and Enroll Now links to `/signup`. The tabs use `scroll={false}`, so switching tabs keeps the scroll position.
+- ⛔ Phase 10 stand-ins: `public/images/course/video-thumb.webp`, `course/sneak-1..4.webp` and `creators/creator-sm.webp` are cut from the 848px preview (1.7× upscale, soft). The video crop has Figma's play button baked in, so a second square shows under the live one below 1440. `npm run assets` overwrites all six once the manual export lands.
+- Phase 08 open, resolved 2026-09-30 (user): course 2 moves to **4.8 and Intermediate** everywhere (the detail header's values), so Home card 2 changed (grid+paths 1.10 → 1.17, home mean 0.95). The Reviews tab still says 4.7 (`ratingSummary.average`).
 - Phase 08 copy kept verbatim from Figma, flagged for the owner: the creator bio has "[Creator's Name]" and "ive into" (missing D), the modules skip Module 3, the first review is wrapped in straight quotes, and the tab reads "Lesson" on one screen and "Lessons" on another (the site uses "Lessons").
 - Phase 08 data notes: `?category=` accepts a chip slug, a learning-path slug (mapped to chip slugs in `pathCategories`) or `featured` (everything). With no filter, `listCourses` repeats the 6 seeds 15× to fill Figma's 5 pages of 18. Filters return unique matches. `metadataBase` reads `NEXT_PUBLIC_SITE_URL` (falls back to localhost:3000), so set it on deploy. The creator, reviewer and sneak-peek image paths point at `npm run assets` outputs that wait on the manual export.
 - Phase 08 skeletons: `ui/Placeholder` marks unbuilt bodies. Delete it once Phases 09–13 replace every use. The course layout owns the band and the tab nav (`NavLink`, `aria-current`), and each tab page is only its tab body. `(auth)/layout` owns the full-screen band (auth header, no footer).
@@ -94,12 +100,37 @@
 - Ornament files are `public/images/ornaments/<shape>-<lime|white>-<size>[-flip].webp`. Mirrored ones are baked with the `-flip` suffix, so `Ornament` maps `mirrored` → `-flip` (no CSS flip).
 - S12 verified 2026-09-28: `/` at 375px (headless Edge CDP mobile emulation) has scrollWidth 375 and no horizontal scroll. Two full-bleed `left-1/2` glow layers (right edge 908) and one `img.max-w-none` extend past the viewport but are clipped by their ancestors.
 - Phase 01 icon picks (`npm run icons`; the list is in `scripts/build-icons.mjs`). Matched to `public/images/categories/*.png`: Business → `domain` (not business_center), Marketing → `connect_without_contact` (not campaign), Photography → `photo_camera_front` (not photo_camera), IT → `computer`. Material Symbols has no `developer_mode`, so `DeveloperModeIcon` uses the Figma export. Figma's rating and 16px stars are solid and round-cornered, so both use `rounded/*-fill`.
-- Unconfirmed icon guesses (outlined Symbols; check against the full-res screens in Phases 09–10): filter_alt, category, sort, chevron_left/right, keyboard_arrow_down, share, play_arrow (filled), videocam, group, article, workspace_premium, support_agent, menu, close.
+- Unconfirmed icon guesses (outlined Symbols; check against the full-res screens): filter_alt, category, sort, chevron_left/right, keyboard_arrow_down, share, play_arrow (filled), group, menu, close. Phase 10 matched topic, videocam, badge and connect_without_contact on the course preview.
 - ⛔ Waiting on the manual export: `DesignIcon` falls back to `design_services` until `icon-design.svg` lands, `FacebookIcon`/`GoogleIcon` aren't generated yet, and `Logo` light/dark still use the PNGs (only `mark` is inline SVG). Re-run `npm run icons` and swap the Logo wordmark once they exist.
 - Phase 01 spec fix: `bg-blueprint` uses `calc(50% - 660px)`, not `50% - 720px`. A background-position percentage is relative to (width − 120px tile), so −660 puts the lines at frame x=0 mod 120 (checked at 1440 → 0 and 1920 → 240).
 - `.gitignore` ends with a blanket `.claude` (a user change), which also ignores the commands, agents, hooks and figma kit. Confirm this is intended.
 
 ## Commit messages (suggested, one per phase; newest first)
+
+Phase 10 (not committed yet):
+
+```
+feat(course): build the course detail shell and About tab
+
+- Shell: one full-bleed grid in courses/[slug]/layout. The blueprint
+  band ends 62px below the video at every width (957 at 1440), the
+  412px sidebar (360 below xl) spans the video and tab rows, and the
+  layout stacks below lg. Tabs are chip NavLinks with aria-current,
+  78px below the band (D3), and keep the layout mounted.
+- Header: title, Poppins 500 subtitle, creator by-line link, level,
+  rating and students badges, and a lime Share button that hangs to
+  x=1405 from 1440 (D4).
+- Video poster with a Play preview button at Figma's position; the
+  sidebar has the curriculum preview, price and Enroll Now, includes
+  and the creator with See Full Profile.
+- About: Description, Sneak Peak (4 images) and Key Points.
+- Data: course 2 is 4.8 and Intermediate (the detail header's values),
+  sneak peek images carry alt text, plus enrollText and creator.blurb.
+- Icons: topic and badge replace article, workspace_premium and
+  support_agent. Chip exports chipStyles for the tabs.
+- Stand-in images cut from the Figma preview until the manual export.
+- 1.51% against the scaled preview at Figma's tab offset, 2.92% with D3.
+```
 
 Phase 09 (not committed yet):
 
@@ -172,6 +203,8 @@ feat(home): responsive QA pass and sign-off
 ```
 
 ## Session log (newest first, one line each)
+
+- 2026-09-30: Phase 10 → 🟨. The course shell and About are built: `components/course/{CourseHeader,CourseVideo,CourseSidebar,CourseTabs}`, with the grid layout and the About page. At 1440 over CDP: title (122,172), badges at 317, Share 1284–1405, video (125,416) 720×479, band 957, sidebar (908,416) 412×959 with sections at 456/704/912/1124 (avatar 1148), tabs 1035 (D3), About headings 1118/1606/1803, footer 2207. 1280: sidebar 412, video 692. 1024: sidebar 360, band 825. 768 and 375 stack with no overflow, and the video is 16:10 on phones. Tab clicks keep the same `<aside>` node and move `aria-current`. The About route no longer uses `Placeholder`. Course 2 is now 4.8/Intermediate (user decision).
 
 - 2026-09-29: Phase 09 → 🟨. `/courses` built: SearchForm, FilterBar, CategoryTabs and Pagination (`src/components/search/`), `ui/Dropdown` (details menu), `coursesHref`/`searchCategories`, the featured fix, and BlueBand `clip`. At 1440 over CDP: h1 164, input (408,239) 462×52, filters at 432, chips 512, grid 632–3136, pagination 3208, footer 3328, height 3853. 2.12 against `screens/search.png` ×2.408. No overflow at 375/768/1024 with each menu open. The flow was checked in headless Edge: page 3 → Beginner → UI/UX chip → back/back/forward restores state, the search keeps the filters, and Clear filters works. The route no longer uses `Placeholder`.
 

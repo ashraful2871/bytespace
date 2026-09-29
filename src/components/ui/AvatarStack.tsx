@@ -4,6 +4,8 @@ type AvatarStackProps = {
   avatars: string[];
   /** Label shown in the bubble at the end of the stack, e.g. "26+". */
   more: string;
+  /** Screen-reader text read after `more`, e.g. "learners". */
+  moreLabel?: string;
   size: number;
   /** Horizontal distance between avatar centres. */
   step: number;
@@ -22,6 +24,7 @@ const bubbles = {
 export default function AvatarStack({
   avatars,
   more,
+  moreLabel,
   size,
   step,
   bubble = "lime",
@@ -50,6 +53,7 @@ export default function AvatarStack({
         style={{ width: size, height: size, marginLeft: -overlap }}
       >
         {more}
+        {moreLabel && <span className="sr-only"> {moreLabel}</span>}
       </span>
     </div>
   );

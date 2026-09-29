@@ -38,7 +38,7 @@ export default function Header({ variant = "default" }: HeaderProps) {
               <li key={item.label}>
                 <NavLink
                   link={item}
-                  className={`block ${link}`}
+                  className={`block tap-target ${link}`}
                   activeClassName="type-label-m"
                   inactiveClassName="text-base/[1.6]"
                 />
@@ -49,11 +49,11 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
         <div className="mt-12 flex items-center justify-end gap-6 type-body-m">
           {authNav.map((item) => (
-            <Link key={item.label} href={item.href} className={`hidden md:inline ${link}`}>
+            <Link key={item.label} href={item.href} className={`hidden tap-target md:inline ${link}`}>
               {item.label}
             </Link>
           ))}
-          <Link href="#" aria-label="Cart" className={`flex ${link}`}>
+          <Link href="#" aria-label="Cart" className={`flex tap-target ${link}`}>
             <ShoppingBagIcon />
           </Link>
           <MobileNav />

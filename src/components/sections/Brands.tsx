@@ -1,7 +1,5 @@
 import Image from "next/image";
 
-// Figma 1:1708: five logo frames (41px tall; the last is 42) spread across 1132px.
-// These are 1x crops of Home.png until the manual export adds public/images/svg/brands/brand-1..5.svg.
 const brands = [
   { src: "/images/brands/logo-1.png", width: 167, height: 41 },
   { src: "/images/brands/logo-2.png", width: 168, height: 41 },
@@ -19,7 +17,8 @@ export default function Brands() {
             <Image
               src={brand.src}
               alt="Logoipsum"
-              width={brand.width} height={brand.height}
+              width={brand.width}
+              height={brand.height}
               className="block max-md:h-8 max-md:w-auto"
             />
           </li>

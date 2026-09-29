@@ -18,7 +18,6 @@ export default function Courses() {
           description="At Bytespace Courses, we bring you closer to life-changing knowledge. Explore a variety of courses across different fields, from technology to the arts, and make a difference in your career and life."
         />
 
-        {/* From xl the chips sit in the design's three centred rows (21px apart); below that they wrap freely. */}
         <nav
           id="categories"
           aria-label="Course categories"
@@ -28,14 +27,20 @@ export default function Courses() {
             <ul key={rowIndex} className="contents xl:flex xl:gap-4">
               {row.map((category) => (
                 <li key={category.slug}>
-                  <Chip href={`/courses?category=${category.slug}`} active={category.slug === "featured"}>
+                  <Chip
+                    href={`/courses?category=${category.slug}`}
+                    active={category.slug === "featured"}
+                  >
                     {category.label}
                   </Chip>
                 </li>
               ))}
               {rowIndex === categoryRows.length - 1 && (
                 <li className="flex items-center">
-                  <Link href="/courses" className="type-label-m text-primary-800 hover:underline">
+                  <Link
+                    href="/courses"
+                    className="tap-target type-label-m text-primary-800 hover:underline"
+                  >
                     + More
                   </Link>
                 </li>

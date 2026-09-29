@@ -25,18 +25,18 @@ export const footerColumns: { heading?: string; links: NavLink[] }[] = [
   {
     heading: "Browse",
     links: [
-      { label: "Featured Courses", href: "#courses" },
-      { label: "Featured Categories", href: "#categories" },
-      { label: "Business", href: "#" },
-      { label: "IT", href: "#" },
-      { label: "Design", href: "#" },
+      { label: "Featured Courses", href: "/#courses" },
+      { label: "Featured Categories", href: "/#categories" },
+      { label: "Business", href: "/courses?category=business" },
+      { label: "IT", href: "/courses?category=it-and-software" },
+      { label: "Design", href: "/courses?category=design" },
     ],
   },
   {
     links: [
-      { label: "Development", href: "#" },
-      { label: "Marketing", href: "#" },
-      { label: "Photography", href: "#" },
+      { label: "Development", href: "/courses?category=development" },
+      { label: "Marketing", href: "/courses?category=marketing" },
+      { label: "Photography", href: "/courses?category=photography" },
       { label: "Finance", href: "#" },
       { label: "Sport", href: "#" },
     ],
@@ -44,7 +44,7 @@ export const footerColumns: { heading?: string; links: NavLink[] }[] = [
   {
     heading: "Platform",
     links: [
-      { label: "Become a Creator", href: "#creators" },
+      { label: "Become a Creator", href: "/#creators" },
       { label: "Affiliate Program", href: "#" },
       { label: "Contact", href: "#" },
       { label: "Help", href: "#" },

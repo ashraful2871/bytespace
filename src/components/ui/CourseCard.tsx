@@ -15,28 +15,31 @@ type CourseCardProps = {
 const variants = {
   default: {
     title: "leading-[1.2]",
-    byline: "leading-[19px]", // 12/1.6 rounded to Figma's 19px box, so the card is 384 tall
-    level: "leading-[1.2]",
-    rating: "leading-[1.6]",
+    byline: "type-body-xs",
+    level: "type-label-xs leading-[1.2]",
+    rating: "type-body-l",
     bubble: "lime",
   },
   relaxed: {
     title: "",
-    byline: "leading-5",
-    level: "leading-5",
-    rating: "font-medium leading-7",
+    byline: "type-body-xs leading-5",
+    level: "type-label-xs",
+    rating: "type-label-l leading-7",
     bubble: "dark",
   },
 } as const;
 
-/** 373 × 384 course card. The title link is stretched over the whole card, so the card is one click target. */
+/**
+ * 373 × 384 course card. The title link is stretched over the whole card (above the positioned avatars, inside the
+ * card's own stacking context), so the card is one click target.
+ */
 export default function CourseCard({ course, variant = "default", className = "" }: CourseCardProps) {
   const v = variants[variant];
   const stats = [`${course.lessons} Lessons`, course.duration, `${course.comments} Comments`];
 
   return (
     <article
-      className={`min-w-0 overflow-clip rounded-card border border-neutral-200 bg-white transition-colors ring-neutral-950 ring-offset-2 hover:border-neutral-300 has-[a:focus-visible]:ring-2 ${className}`}
+      className={`isolate min-w-0 overflow-clip rounded-card border border-neutral-200 bg-white transition-colors ring-neutral-950 ring-offset-2 hover:border-neutral-300 has-[a:focus-visible]:ring-2 ${className}`}
     >
       <div className="relative px-[15px] pt-[15px] pb-5">
         <div className="@container relative aspect-[341/195] overflow-hidden rounded-thumb bg-[#443131]">
@@ -67,16 +70,16 @@ export default function CourseCard({ course, variant = "default", className = ""
               <h3 className={`truncate type-heading-xs text-black ${v.title}`}>
                 <Link
                   href={`/courses/${course.slug}`}
-                  className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-hidden"
+                  className="after:absolute after:inset-0 after:z-10 after:content-[''] focus-visible:outline-hidden"
                 >
                   {course.title}
                 </Link>
               </h3>
-              <p className={`text-xs text-body ${v.byline}`}>
+              <p className={`text-body ${v.byline}`}>
                 by <span className="text-primary-800">{course.author}</span>
               </p>
             </div>
-            <p className={`mr-px flex shrink-0 items-center text-lg text-body ${v.rating}`}>
+            <p className={`mr-px flex shrink-0 items-center text-body ${v.rating}`}>
               {course.rating}
               <StarRateIcon size={24} className="text-neutral-200" />
               <span className="sr-only">out of 5</span>
@@ -86,9 +89,16 @@ export default function CourseCard({ course, variant = "default", className = ""
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1 rounded-pill bg-neutral-50 px-3 py-1.5 text-neutral-700">
               <SignalCellularAltIcon size={20} />
-              <span className={`text-xs font-medium ${v.level}`}>{course.level}</span>
+              <span className={v.level}>{course.level}</span>
             </span>
-            <AvatarStack avatars={learnerAvatars} more={`${course.learners}+`} size={32} step={24} bubble={v.bubble} />
+            <AvatarStack
+              avatars={learnerAvatars}
+              more={`${course.learners}+`}
+              moreLabel="learners"
+              size={32}
+              step={24}
+              bubble={v.bubble}
+            />
           </div>
 
           {variant === "relaxed" ? (

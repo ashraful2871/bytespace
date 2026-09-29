@@ -58,51 +58,74 @@ const refHeight = Math.round(refMeta.height * scale);
 const ref = await sharp(refPath).resize(width, refHeight).flatten({ background: "#fff" }).removeAlpha().raw().toBuffer();
 if (scale !== 1) console.warn(`Note: reference is ${refMeta.width}px wide; scaled ×${scale.toFixed(3)} for --width ${width}.`);
 
-// Capture.
-const profile = await mkdtemp(path.join(os.tmpdir(), "bytespace-diff-"));
-const shotPath = path.join(profile, "shot.png");
-try {
-  await promisify(execFile)(
-    browser,
-    [
-      "--headless=new",
-      "--hide-scrollbars",
-      "--force-device-scale-factor=1",
-      "--disable-gpu",
-      "--no-first-run",
-      "--no-default-browser-check",
-      `--user-data-dir=${profile}`,
-      `--window-size=${width},${refHeight}`,
-      "--virtual-time-budget=8000",
-      `--screenshot=${shotPath}`,
-      url,
-    ],
-    { timeout: 60_000 },
-  );
-  if (!existsSync(shotPath)) throw new Error("the browser exited without writing a screenshot");
-} catch (err) {
-  console.error(`Capture of ${url} failed: ${err.message}\nIs the dev server running (npm run dev)?`);
+// Capture, normalised to exactly width × refHeight (padded with white or cropped).
+async function capture() {
+  const profile = await mkdtemp(path.join(os.tmpdir(), "bytespace-diff-"));
+  const shotPath = path.join(profile, "shot.png");
+  try {
+    await promisify(execFile)(
+      browser,
+      [
+        "--headless=new",
+        "--hide-scrollbars",
+        "--force-device-scale-factor=1",
+        "--disable-gpu",
+        "--no-first-run",
+        "--no-default-browser-check",
+        `--user-data-dir=${profile}`,
+        `--window-size=${width},${refHeight}`,
+        "--virtual-time-budget=8000",
+        `--screenshot=${shotPath}`,
+        url,
+      ],
+      { timeout: 120_000 },
+    );
+    if (!existsSync(shotPath)) throw new Error("the browser exited without writing a screenshot");
+  } catch (err) {
+    // Headless Edge sometimes keeps running after it has saved the file, so keep a finished shot.
+    if (!(err.killed && existsSync(shotPath) && /bytes written/.test(`${err.stdout}${err.stderr}`))) {
+      console.error(`Capture of ${url} failed: ${err.message}\nIs the dev server running (npm run dev)?`);
+      await rm(profile, { recursive: true, force: true });
+      process.exit(1);
+    }
+  }
+
+  const meta = await sharp(shotPath).metadata();
+  const buffer = await sharp(shotPath)
+    .flatten({ background: "#fff" })
+    .extend({ right: Math.max(0, width - meta.width), bottom: Math.max(0, refHeight - meta.height), background: "#fff" })
+    .extract({ left: 0, top: 0, width, height: refHeight })
+    .removeAlpha()
+    .raw()
+    .toBuffer();
   await rm(profile, { recursive: true, force: true });
-  process.exit(1);
+  if (meta.width !== width || meta.height !== refHeight) {
+    console.warn(`Note: capture was ${meta.width}×${meta.height}; normalised to ${width}×${refHeight}.`);
+  }
+  return buffer;
 }
 
-// Normalise the capture to exactly width × refHeight (pad with white or crop).
-const shotMeta = await sharp(shotPath).metadata();
-const current = await sharp(shotPath)
-  .flatten({ background: "#fff" })
-  .extend({
-    right: Math.max(0, width - shotMeta.width),
-    bottom: Math.max(0, refHeight - shotMeta.height),
-    background: "#fff",
-  })
-  .extract({ left: 0, top: 0, width, height: refHeight })
-  .removeAlpha()
-  .raw()
-  .toBuffer();
-await rm(profile, { recursive: true, force: true });
-if (shotMeta.width !== width || shotMeta.height !== refHeight) {
-  console.warn(`Note: capture was ${shotMeta.width}×${shotMeta.height}; normalised to ${width}×${refHeight}.`);
+// Some captures lay the page out beside a white scrollbar gutter despite --hide-scrollbars, which skews every
+// band. Spot it by the last pixel column: all white in the capture, while the reference has colour there.
+function hasScrollbarStrip(buffer) {
+  let refColoured = 0;
+  let shotWhite = 0;
+  for (let y = 0; y < refHeight; y++) {
+    const i = (y * width + width - 1) * 3;
+    if (ref[i] + ref[i + 1] + ref[i + 2] < 700) {
+      refColoured++;
+      if (buffer[i] === 255 && buffer[i + 1] === 255 && buffer[i + 2] === 255) shotWhite++;
+    }
+  }
+  return refColoured > refHeight / 10 && shotWhite > refColoured * 0.9;
 }
+
+let current = await capture();
+for (let attempt = 2; attempt <= 3 && hasScrollbarStrip(current); attempt++) {
+  console.warn(`Note: the capture has a scrollbar strip on the right; retrying (${attempt}/3).`);
+  current = await capture();
+}
+if (hasScrollbarStrip(current)) console.warn("Note: the capture still has a scrollbar strip; scores are skewed.");
 
 // Score each band.
 await mkdir(DIFF_DIR, { recursive: true });

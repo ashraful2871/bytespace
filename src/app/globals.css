@@ -56,22 +56,12 @@
   --radius-float: 16px;
   --radius-pill: 24px;
 
-  /* Shadow A from Figma (8 layers). Cut-outs with transparency use drop-shadow-float instead. */
+  /* Shadow A from Figma (8 layers). Cut-outs with transparency get it pre-rendered by `npm run assets` and drawn with
+     FloatShadow: a drop-shadow() filter chain is re-blurred on every scroll frame. Never box-shadow those. */
   --shadow-float:
     0.518px 0.741px 3.036px #0000000a, 2.233px 3.19px 5.723px #0000000f, 5.383px 7.69px 9.571px #00000012,
     10.208px 14.582px 16.087px #00000014, 16.946px 24.209px 24px #00000017, 25.838px 36.912px 36px #0000001a,
     37.122px 53.032px 56px #0000001b, 51.038px 72.912px 72px #00000021;
-
-  /* Legacy heading scale; Phase 07 replaces these with the type-* utilities below. */
-  --text-hero: 72px;
-  --text-hero--line-height: 85px;
-  --text-hero--letter-spacing: -0.01em;
-  --text-display: 44px;
-  --text-display--line-height: 53px;
-  --text-display--letter-spacing: -0.01em;
-  --text-title: 36px;
-  --text-title--line-height: 44px;
-  --text-title--letter-spacing: -0.01em;
 
   --font-sans: var(--font-satoshi-family), ui-sans-serif, system-ui, sans-serif;
   --font-satoshi: var(--font-satoshi-family), ui-sans-serif, system-ui, sans-serif;
@@ -120,15 +110,22 @@
   background-position: calc(50% - 660px) -2px;
 }
 
-/* Shadow A as a filter chain, so it follows the alpha of PNG/WebP cut-outs. Never box-shadow those. */
-@utility drop-shadow-float {
-  filter: drop-shadow(0.518px 0.741px 3.036px #0000000a) drop-shadow(2.233px 3.19px 5.723px #0000000f)
-    drop-shadow(5.383px 7.69px 9.571px #00000012) drop-shadow(10.208px 14.582px 16.087px #00000014)
-    drop-shadow(16.946px 24.209px 24px #00000017) drop-shadow(25.838px 36.912px 36px #0000001a)
-    drop-shadow(37.122px 53.032px 56px #0000001b) drop-shadow(51.038px 72.912px 72px #00000021);
+/* Grows a small control's hit area to at least 44×44 (WCAG 2.5.5), centred on it, without changing the layout.
+   Insets are min(0, 50% - 22px), so a side already 44px or longer is left alone. */
+@utility tap-target {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block: min(0px, calc(50% - 22px));
+    inset-inline: min(0px, calc(50% - 22px));
+  }
 }
 
-/* Figma text styles: family, size, line height, weight and tracking in one class. */
+/* Figma text styles: family, size, line height, weight and tracking in one class. Figma lays text out on whole-pixel
+   line boxes, so the styles the pages line up on set them in px (44 × 1.2 → 53, 36 × 1.2 → 43, 18 × 1.6 → 29,
+   14 × 1.6 → 22, 12 × 1.6 → 19), which keeps the sections below them on whole pixels. */
 @utility type-heading-l {
   font-family: var(--font-poppins);
   font-size: 72px;
@@ -139,14 +136,14 @@
 @utility type-heading-m {
   font-family: var(--font-poppins);
   font-size: 44px;
-  line-height: 1.2;
+  line-height: 53px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 @utility type-title {
   font-family: var(--font-poppins);
   font-size: 36px;
-  line-height: 1.2;
+  line-height: 43px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -181,7 +178,7 @@
 @utility type-body-l {
   font-family: var(--font-satoshi);
   font-size: 18px;
-  line-height: 1.6;
+  line-height: 29px;
   font-weight: 400;
 }
 @utility type-body-m {
@@ -193,13 +190,13 @@
 @utility type-body-s {
   font-family: var(--font-satoshi);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 22px;
   font-weight: 400;
 }
 @utility type-body-xs {
   font-family: var(--font-satoshi);
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 19px;
   font-weight: 400;
 }
 @utility type-label-xl {

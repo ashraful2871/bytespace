@@ -13,6 +13,21 @@ const OUT = path.join(ROOT, "public/images");
 const TINTS = { lime: "#D4FB20", white: "#F5F5F6" };
 const WEBP = { quality: 90, effort: 5 };
 
+// Figma "Shadow A" (--shadow-float in globals.css): x, y, blur and alpha byte of each layer.
+const SHADOW_A = [
+  [0.518, 0.741, 3.036, 0x0a],
+  [2.233, 3.19, 5.723, 0x0f],
+  [5.383, 7.69, 9.571, 0x12],
+  [10.208, 14.582, 16.087, 0x14],
+  [16.946, 24.209, 24, 0x17],
+  [25.838, 36.912, 36, 0x1a],
+  [37.122, 53.032, 56, 0x1b],
+  [51.038, 72.912, 72, 0x21],
+];
+// How far Shadow A reaches past the picture's box (3σ of the widest layer). src/components/ui/FloatShadow.tsx
+// places the baked file with the same padding.
+const SHADOW_PAD = { left: 64, top: 40, right: 160, bottom: 184 };
+
 const written = [];
 const missing = [];
 
@@ -113,10 +128,62 @@ async function toWebp(src, out, { required = true } = {}) {
   await log(out);
 }
 
+/**
+ * Pre-renders Shadow A under a cut-out as a black WebP whose alpha is the shadow, so the page draws a plain image
+ * instead of a drop-shadow() filter chain (which Chrome re-blurs on every scroll frame). `width`×`height` is the
+ * picture's CSS box; `resize` and `crop` place the source in it the way the page does (object-cover, or a clipping
+ * frame). Output is 1 px per CSS px, padded by SHADOW_PAD. The layers are independent, as in Figma.
+ */
+async function bakeShadow(src, out, { width, height, resize = { width, height }, crop }) {
+  if (!existsSync(src)) {
+    missing.push(rel(src));
+    return;
+  }
+  let picture = sharp(src).resize(resize.width, resize.height, { fit: "cover", kernel: "lanczos3" });
+  if (crop) picture = picture.extract(crop);
+  const alpha = await picture.ensureAlpha().extractChannel("alpha").raw().toBuffer();
+
+  const W = width + SHADOW_PAD.left + SHADOW_PAD.right;
+  const H = height + SHADOW_PAD.top + SHADOW_PAD.bottom;
+  // Product of (1 - layer alpha): the black layers stacked with source-over.
+  const clear = new Float32Array(W * H).fill(1);
+  for (const [x, y, blur, alphaByte] of SHADOW_A) {
+    const left = SHADOW_PAD.left + Math.round(x);
+    const top = SHADOW_PAD.top + Math.round(y);
+    const layer = await sharp(alpha, { raw: { width, height, channels: 1 } })
+      .extend({ left, top, right: W - width - left, bottom: H - height - top, background: "#000" })
+      .blur({ sigma: blur / 2, minAmplitude: 0.001, precision: "float" })
+      .extractChannel(0)
+      .raw()
+      .toBuffer();
+    if (layer.length !== W * H) throw new Error(`bakeShadow: expected one channel, got ${layer.length / (W * H)}`);
+    const a = alphaByte / 255 / 255;
+    for (let i = 0; i < clear.length; i++) clear[i] *= 1 - a * layer[i];
+  }
+
+  const rgba = Buffer.alloc(W * H * 4);
+  for (let i = 0; i < clear.length; i++) rgba[i * 4 + 3] = Math.round((1 - clear[i]) * 255);
+  await ensureDir(out);
+  await sharp(rgba, { raw: { width: W, height: H, channels: 4 } }).webp({ lossless: true, effort: 6 }).toFile(out);
+  await log(out);
+}
+
 async function buildPhotos() {
   console.log("\nPhotos, avatars and thumbnails → public/images");
   await toWebp(path.join(SRC, "hero/student.png"), path.join(OUT, "hero/student.webp"));
   await toWebp(path.join(SRC, "features/creator-photo.png"), path.join(OUT, "features/creator-photo.webp"));
+  // Home student box 578×541 (object-cover); Features reuses it on its 577×540 box.
+  await bakeShadow(path.join(SRC, "hero/student.png"), path.join(OUT, "hero/student-shadow.webp"), {
+    width: 578,
+    height: 541,
+  });
+  // Figma 34:1011: the photo at 683×683, shifted -124px, clipped by a 435×596 frame.
+  await bakeShadow(path.join(SRC, "features/creator-photo.png"), path.join(OUT, "features/creator-photo-shadow.webp"), {
+    width: 435,
+    height: 596,
+    resize: { width: 683, height: 683 },
+    crop: { left: 124, top: 0, width: 435, height: 596 },
+  });
 
   for (const dir of ["avatars", "testimonials"]) {
     for (const file of (await readdir(path.join(SRC, dir))).filter((f) => f.endsWith(".png")).sort()) {

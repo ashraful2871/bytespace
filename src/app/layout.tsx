@@ -21,7 +21,12 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ByteSpace - Get Access to Hundreds of Courses",
+  // Set NEXT_PUBLIC_SITE_URL to the deployed origin so canonical and Open Graph URLs resolve against it.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  title: {
+    default: "ByteSpace - Get Access to Hundreds of Courses",
+    template: "%s | ByteSpace",
+  },
   description:
     "Unlock your creativity, gain valuable knowledge, and grow your business with our wide range of courses.",
 };

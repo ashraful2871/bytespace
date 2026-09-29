@@ -58,7 +58,7 @@ export function HappyStudentsCard({ variant = "default", className = "" }: Posit
             <span className="sr-only">average rating from 240 reviews</span>
           </p>
         ) : (
-          <p className="flex items-center text-xs/[1.6]">
+          <p className="flex items-center type-body-xs">
             4.5&nbsp;<span className="text-neutral-400">(240)</span>
             <StarIcon size={16} className="text-secondary-400" />
             <span className="sr-only">average rating from 240 reviews</span>

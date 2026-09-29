@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { CloseIcon, MenuIcon } from "@/components/icons";
@@ -69,7 +68,7 @@ export default function MobileNav() {
         aria-expanded={open}
         aria-controls={id}
         onClick={show}
-        className={`flex transition-colors hover:text-secondary-400 md:hidden ${focusRing}`}
+        className={`flex tap-target transition-colors hover:text-secondary-400 md:hidden ${focusRing}`}
       >
         <MenuIcon />
       </button>
@@ -89,7 +88,7 @@ export default function MobileNav() {
             type="button"
             aria-label="Close menu"
             onClick={close}
-            className={`mt-12 flex transition-colors hover:text-secondary-400 ${focusRing}`}
+            className={`mt-12 flex tap-target transition-colors hover:text-secondary-400 ${focusRing}`}
           >
             <CloseIcon />
           </button>
@@ -110,13 +109,9 @@ export default function MobileNav() {
           </ul>
 
           <div className="mt-auto flex flex-col gap-4 pt-10">
-            <Link
-              href={authNav[0].href}
-              onClick={close}
-              className="inline-flex h-[46px] items-center justify-center rounded-pill border border-white/40 type-label-l transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-400"
-            >
+            <ButtonLink href={authNav[0].href} onClick={close} variant="outline-light" fullWidth>
               {authNav[0].label}
-            </Link>
+            </ButtonLink>
             <ButtonLink href={authNav[1].href} onClick={close} fullWidth>
               {authNav[1].label}
             </ButtonLink>

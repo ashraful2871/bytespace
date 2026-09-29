@@ -54,7 +54,7 @@ export default function Logo({ variant = "light", href = "/", className = "", on
   }
 
   return (
-    <Link href={href} onClick={onClick} aria-label="ByteSpace home" className={`inline-flex shrink-0 ${className}`}>
+    <Link href={href} onClick={onClick} aria-label="ByteSpace home" className={`inline-flex shrink-0 tap-target ${className}`}>
       {content}
     </Link>
   );

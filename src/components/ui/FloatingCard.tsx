@@ -13,10 +13,14 @@ const tones = {
   blue: "bg-primary-800 text-neutral-50",
 };
 
-/** The frosted card base used by the hero and Features compositions (content and position via props). */
+/**
+ * The card base used by the hero and Features compositions (content and position via props). Figma gives it a 10px
+ * background blur, but both fills are opaque, so it would never show; it is left out because a backdrop-filter
+ * re-blurs on every scroll frame.
+ */
 export default function FloatingCard({ tone = "white", className = "", style, children }: FloatingCardProps) {
   return (
-    <div className={`flex flex-col gap-2 rounded-float p-4 backdrop-blur-[10px] ${tones[tone]} ${className}`} style={style}>
+    <div className={`flex flex-col gap-2 rounded-float p-4 ${tones[tone]} ${className}`} style={style}>
       {children}
     </div>
   );

@@ -1,14 +1,15 @@
 export type NavLink = {
   label: string;
   href: string;
-  /** Path prefix that marks the link as current; without it the pathname must equal `href`. */
   match?: string;
 };
+
+export const creatorsHref = "/creators/purepearl-studio";
 
 export const mainNav: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Courses", href: "/courses", match: "/courses" },
-  { label: "Creators", href: "/creators/purepearl-studio", match: "/creators" },
+  { label: "Creators", href: creatorsHref, match: "/creators" },
 ];
 
 export const authNav: NavLink[] = [
@@ -17,10 +18,11 @@ export const authNav: NavLink[] = [
 ];
 
 export function isCurrent(pathname: string, link: NavLink) {
-  return link.match ? pathname === link.match || pathname.startsWith(`${link.match}/`) : pathname === link.href;
+  return link.match
+    ? pathname === link.match || pathname.startsWith(`${link.match}/`)
+    : pathname === link.href;
 }
 
-/** Footer link columns. The headings are invisible in the design; they only offset columns 1 and 3. */
 export const footerColumns: { heading?: string; links: NavLink[] }[] = [
   {
     heading: "Browse",
@@ -46,7 +48,6 @@ export const footerColumns: { heading?: string; links: NavLink[] }[] = [
     links: [
       { label: "Become a Creator", href: "/signup" },
       { label: "Affiliate Program", href: "#" },
-      // /contact is not in Figma yet.
       { label: "Contact", href: "#" },
       { label: "Help", href: "#" },
       { label: "About", href: "#" },

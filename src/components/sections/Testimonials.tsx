@@ -19,10 +19,10 @@ export default function Testimonials() {
                 Discover What Our Community Is Saying
               </h2>
               <p className="type-body-m text-body md:type-body-l lg:flex-[0_1_580px]">
-                At ByteSpace, our vibrant community of learners and creators is at
-                the heart of what we do. Hear directly from those who have
-                experienced the transformative journey of learning and creating on
-                our platform. Explore testimonials that reflect the diverse
+                At ByteSpace, our vibrant community of learners and creators is
+                at the heart of what we do. Hear directly from those who have
+                experienced the transformative journey of learning and creating
+                on our platform. Explore testimonials that reflect the diverse
                 perspectives of enthusiastic learners and accomplished creators.
               </p>
             </div>

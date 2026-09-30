@@ -1,7 +1,6 @@
 import NavLink from "@/components/layout/NavLink";
 import { chipStyles } from "@/components/ui/Chip";
 
-/** About, Lessons and Reviews as chip links; NavLink marks the current tab with `aria-current="page"`. */
 export default function CourseTabs({ slug }: { slug: string }) {
   const base = `/courses/${slug}`;
   const tabs = [

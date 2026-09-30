@@ -1,14 +1,20 @@
 import Image from "next/image";
 import { PlayArrowIcon } from "@/components/icons";
+import { cn } from "@/lib/cn";
 
-/**
- * Figma 55:4202: the 720×479 preview poster (16:10 on phones). The play button is a stand-in until a player
- * exists. Figma puts its 104px square at (323,203), centred at 52.1% × 53.2% (on the face, not the frame centre).
- */
-export default function CourseVideo({ title, className = "" }: { title: string; className?: string }) {
+export default function CourseVideo({
+  title,
+  className,
+}: {
+  title: string;
+  className?: string;
+}) {
   return (
     <div
-      className={`relative aspect-[16/10] overflow-hidden rounded-card bg-neutral-200 md:aspect-[720/479] ${className}`}
+      className={cn(
+        "relative aspect-[16/10] overflow-hidden rounded-card bg-neutral-200 md:aspect-[720/479]",
+        className,
+      )}
     >
       <Image
         src="/images/course/video-thumb.webp"

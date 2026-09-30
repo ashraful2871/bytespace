@@ -1,20 +1,31 @@
 import Image from "next/image";
+import { cn } from "@/lib/cn";
 
 type OrnamentProps = {
-  shape: "spring-a" | "spring-b" | "torus" | "pyramid" | "cylinder" | "cta-cone";
+  shape:
+    | "spring-a"
+    | "spring-b"
+    | "torus"
+    | "pyramid"
+    | "cylinder"
+    | "cta-cone";
   tint: "lime" | "white";
-  /** Display size in px (square); also part of the file name, e.g. torus-lime-342.webp. */
   size: number;
-  /** Position in the parent's coordinates (usually a `design-stage`, i.e. the 1440 frame). */
   x: number;
   y: number;
-  /** Uses the baked `-flip` file; ornaments are never flipped with CSS. */
   mirrored?: boolean;
   className?: string;
 };
 
-/** A tinted 3D shape from public/images/ornaments/, placed absolutely in Figma coordinates. */
-export default function Ornament({ shape, tint, size, x, y, mirrored = false, className = "" }: OrnamentProps) {
+export default function Ornament({
+  shape,
+  tint,
+  size,
+  x,
+  y,
+  mirrored = false,
+  className,
+}: OrnamentProps) {
   return (
     <Image
       src={`/images/ornaments/${shape}-${tint}-${size}${mirrored ? "-flip" : ""}.webp`}
@@ -22,7 +33,10 @@ export default function Ornament({ shape, tint, size, x, y, mirrored = false, cl
       aria-hidden
       width={size}
       height={size}
-      className={`pointer-events-none absolute max-w-none select-none ${className}`}
+      className={cn(
+        "pointer-events-none absolute max-w-none select-none",
+        className,
+      )}
       style={{ left: x, top: y, width: size, height: size }}
     />
   );

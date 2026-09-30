@@ -1,10 +1,13 @@
 import Link from "next/link";
 import Chip from "@/components/ui/Chip";
-import CourseCard from "@/components/ui/CourseCard";
+import CourseGrid from "@/components/ui/CourseGrid";
 import SectionHeader from "@/components/ui/SectionHeader";
-import { categoryRows, courses } from "@/data/courses";
+import { categoryRows } from "@/data/categories";
+import { courses } from "@/data/courses";
 
 export default function Courses() {
+  const lastRow = categoryRows.length - 1;
+
   return (
     <section id="courses" className="scroll-mt-6 bg-white pt-16 md:pt-[72px]">
       <div className="container-page">
@@ -35,7 +38,7 @@ export default function Courses() {
                   </Chip>
                 </li>
               ))}
-              {rowIndex === categoryRows.length - 1 && (
+              {rowIndex === lastRow && (
                 <li className="flex items-center">
                   <Link
                     href="/courses"
@@ -49,11 +52,7 @@ export default function Courses() {
           ))}
         </nav>
 
-        <div className="mt-12 grid gap-6 md:mt-[77px] md:grid-cols-2 xl:grid-cols-[repeat(3,minmax(0,373px))] xl:gap-10">
-          {courses.map((course) => (
-            <CourseCard key={course.slug} course={course} />
-          ))}
-        </div>
+        <CourseGrid courses={courses} className="mt-12 md:mt-[77px]" />
       </div>
     </section>
   );

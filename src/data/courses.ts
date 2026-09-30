@@ -31,7 +31,6 @@ export type Course = {
   students: number;
   description: string[];
   sneakPeek: { src: string; alt: string }[];
-  /** Sidebar copy above the price. */
   enrollText: string;
   keyPoints: string[];
   curriculum: {
@@ -53,74 +52,7 @@ export type Course = {
   reviews: Review[];
 };
 
-export type Category = {
-  slug: string;
-  label: string;
-};
-
-const category = (label: string): Category => ({
-  slug: label
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, ""),
-  label,
-});
-
-export const categoryRows: Category[][] = [
-  [
-    "Featured",
-    "Music",
-    "Drawing & Painting",
-    "Marketing",
-    "Animation",
-    "Social Media",
-    "UI/UX Design",
-    "Creative Marketing",
-  ],
-  [
-    "Digital Illustration",
-    "Film & Video",
-    "Crafts",
-    "Freelance & Entrepreneurship",
-    "Graphic Design",
-    "Photography",
-  ],
-  ["Productivity", "Web Development", "Data Science", "Cooking"],
-].map((row) => row.map(category));
-
-export const categories: Category[] = categoryRows.flat();
-
-export const searchCategories: Category[] = [
-  ...categoryRows[0],
-  ...categories.filter((c) => c.slug === "cooking"),
-];
-
 export const levels: Level[] = ["Beginner", "Intermediate", "Advanced"];
-
-export const learningPaths = [
-  { slug: "design", label: "Design", icon: "design" },
-  { slug: "development", label: "Development", icon: "development" },
-  { slug: "it-and-software", label: "IT & Software", icon: "it" },
-  { slug: "business", label: "Business", icon: "business" },
-  { slug: "marketing", label: "Marketing", icon: "marketing" },
-  { slug: "photography", label: "Photography", icon: "photography" },
-] as const;
-
-const pathCategories: Record<string, string[]> = {
-  design: [
-    "ui-ux-design",
-    "graphic-design",
-    "digital-illustration",
-    "drawing-and-painting",
-    "animation",
-  ],
-  development: ["web-development"],
-  "it-and-software": ["data-science", "web-development"],
-  business: ["freelance-and-entrepreneurship", "productivity"],
-  marketing: ["marketing", "creative-marketing", "social-media"],
-  photography: ["photography", "film-and-video"],
-};
 
 export const learnerAvatars = [1, 2, 3, 4].map(
   (n) => `/images/avatars/learner-${n}.webp`,
@@ -276,7 +208,6 @@ const seeds: Seed[] = [
     slug: "build-digital-asset",
     title: "Build Digital Asset",
     fullTitle: "Build Digital Asset: A Comprehensive Guide",
-    // The detail header's values (55:4189); Figma's cards all repeat 4.5 and Beginner.
     rating: 4.8,
     level: "Intermediate",
     category: "graphic-design",
@@ -317,134 +248,4 @@ export const courses: Course[] = seeds.map(({ fullTitle, ...seed }) => ({
 
 export function getCourse(slug: string): Course | undefined {
   return courses.find((course) => course.slug === slug);
-}
-
-export const sortOptions = [
-  { value: "relevant", label: "Most relevant" },
-  { value: "popular", label: "Most popular" },
-  { value: "rating", label: "Highest rated" },
-  { value: "price-asc", label: "Price: low to high" },
-  { value: "price-desc", label: "Price: high to low" },
-] as const;
-
-export type Sort = (typeof sortOptions)[number]["value"];
-
-export type CourseQuery = {
-  q?: string;
-  category?: string;
-  level?: string;
-  sort?: string;
-  page?: number;
-  perPage?: number;
-  /** Limits the list to one creator's courses (the creator profile). Not a URL parameter. */
-  creator?: string;
-};
-
-type SearchParams = Record<string, string | string[] | undefined>;
-
-export function parseCourseQuery(params: SearchParams): CourseQuery {
-  const first = (key: string) => {
-    const value = params[key];
-    return (Array.isArray(value) ? value[0] : value) || undefined;
-  };
-
-  return {
-    q: first("q"),
-    category: first("category"),
-    level: first("level"),
-    sort: first("sort"),
-    page: Number(first("page")) || 1,
-  };
-}
-
-/** Builds a search URL on `pathname`, the page the filters apply to (the creator profile reuses the filter bar). */
-export function coursesHref(
-  query: CourseQuery,
-  patch: Partial<CourseQuery> = {},
-  pathname = "/courses",
-) {
-  const { q, category, level, sort, page } = {
-    ...query,
-    page: undefined,
-    ...patch,
-  };
-  const params = new URLSearchParams();
-  if (q) params.set("q", q);
-  if (category && category !== "featured") params.set("category", category);
-  if (level) params.set("level", level);
-  if (sort && sort !== "relevant") params.set("sort", sort);
-  if (page && page > 1) params.set("page", String(page));
-  const search = params.toString();
-  return search ? `${pathname}?${search}` : pathname;
-}
-
-const CATALOGUE_REPEAT = 15;
-
-const sorters: Record<Sort, ((a: Course, b: Course) => number) | null> = {
-  relevant: null,
-  popular: (a, b) => b.students - a.students,
-  rating: (a, b) => b.rating - a.rating,
-  "price-asc": (a, b) => a.price - b.price,
-  "price-desc": (a, b) => b.price - a.price,
-};
-
-function inCategory(course: Course, slug: string) {
-  return (
-    slug === "featured" ||
-    course.category === slug ||
-    (pathCategories[slug]?.includes(course.category) ?? false)
-  );
-}
-
-export function listCourses({
-  q,
-  category,
-  level,
-  sort,
-  page = 1,
-  perPage = 18,
-  creator,
-}: CourseQuery = {}) {
-  const query = q?.trim().toLowerCase();
-  const categoryLabel = (slug: string) =>
-    categories.find((c) => c.slug === slug)?.label ?? "";
-
-  let matches = courses.filter(
-    (course) =>
-      (!query ||
-        [
-          course.title,
-          course.fullTitle,
-          course.author,
-          categoryLabel(course.category),
-        ].some((field) => field.toLowerCase().includes(query))) &&
-      (!category || inCategory(course, category)) &&
-      (!level || course.level.toLowerCase() === level.toLowerCase()) &&
-      (!creator || course.creatorSlug === creator),
-  );
-
-  const sorter = sorters[sort as Sort];
-  if (sorter) matches = matches.toSorted(sorter);
-
-  const filtered = Boolean(
-    query || (category && category !== "featured") || level || creator,
-  );
-  const pool = (
-    filtered
-      ? [matches]
-      : Array.from({ length: CATALOGUE_REPEAT }, () => matches)
-  ).flatMap((run, r) =>
-    run.map((course) => ({ id: `${course.slug}-${r}`, course })),
-  );
-
-  const pageCount = Math.max(1, Math.ceil(pool.length / perPage));
-  const current = Math.min(Math.max(1, Math.floor(page) || 1), pageCount);
-
-  return {
-    items: pool.slice((current - 1) * perPage, current * perPage),
-    total: pool.length,
-    page: current,
-    pageCount,
-    perPage,
-  };
 }

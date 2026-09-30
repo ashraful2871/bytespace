@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Brand — blue */
   --color-primary-50: #e7f6ff;
   --color-primary-100: #d3eeff;
   --color-primary-200: #b0ddff;
@@ -14,7 +13,6 @@
   --color-primary-900: #0b36a4;
   --color-primary-950: #071e5f;
 
-  /* Accent — lime */
   --color-secondary-50: #fdffe4;
   --color-secondary-100: #faffc5;
   --color-secondary-200: #f2ff92;
@@ -27,7 +25,6 @@
   --color-secondary-900: #465a0d;
   --color-secondary-950: #243300;
 
-  /* Neutral */
   --color-neutral-50: #f5f5f6;
   --color-neutral-100: #e5e6e8;
   --color-neutral-200: #ced0d3;
@@ -40,35 +37,32 @@
   --color-neutral-900: #3a3b3f;
   --color-neutral-950: #242528;
 
-  /* Text roles used by the design */
   --color-ink: #040819;
   --color-body: #4f4f4f;
   --color-surface: #fafafa;
   --color-track: #f6f6f6;
 
-  /* Accent — violet */
   --color-violet-600: #7f30f7;
   --color-violet-950: #300b6a;
 
-  /* Radii */
   --radius-card: 24px;
   --radius-thumb: 12px;
   --radius-float: 16px;
   --radius-pill: 24px;
 
-  /* Shadow A from Figma (8 layers). Cut-outs with transparency get it pre-rendered by `npm run assets` and drawn with
-     FloatShadow: a drop-shadow() filter chain is re-blurred on every scroll frame. Never box-shadow those. */
   --shadow-float:
-    0.518px 0.741px 3.036px #0000000a, 2.233px 3.19px 5.723px #0000000f, 5.383px 7.69px 9.571px #00000012,
-    10.208px 14.582px 16.087px #00000014, 16.946px 24.209px 24px #00000017, 25.838px 36.912px 36px #0000001a,
+    0.518px 0.741px 3.036px #0000000a, 2.233px 3.19px 5.723px #0000000f,
+    5.383px 7.69px 9.571px #00000012, 10.208px 14.582px 16.087px #00000014,
+    16.946px 24.209px 24px #00000017, 25.838px 36.912px 36px #0000001a,
     37.122px 53.032px 56px #0000001b, 51.038px 72.912px 72px #00000021;
 
   --font-sans: var(--font-satoshi-family), ui-sans-serif, system-ui, sans-serif;
-  --font-satoshi: var(--font-satoshi-family), ui-sans-serif, system-ui, sans-serif;
-  --font-poppins: var(--font-poppins-family), ui-sans-serif, system-ui, sans-serif;
+  --font-satoshi:
+    var(--font-satoshi-family), ui-sans-serif, system-ui, sans-serif;
+  --font-poppins:
+    var(--font-poppins-family), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Fluid gutter (D1): 24px on phones, 72px at 1440, up to 120px. The 1200px column starts at x=120 at 1440. */
 :root {
   --gutter: clamp(1.5rem, 5vw, 7.5rem);
 }
@@ -80,7 +74,6 @@
   padding-inline: var(--gutter);
 }
 
-/* A 1440px layer centred on its section, for placing decorations in Figma frame coordinates. */
 @utility design-stage {
   position: absolute;
   inset-block: 0;
@@ -90,26 +83,17 @@
   pointer-events: none;
 }
 
-/* A 1440px Figma frame scaled to fill its container at any width (zoom = 100cqw / 1440px; tan(atan2())
-   divides two lengths into a plain number). The parent needs `@container`. Zoom scales layout too, so the
-   section's height follows. */
 @utility zoom-frame {
   width: 1440px;
   zoom: tan(atan2(100cqw, 1440px));
 }
 
-/* Scales a screen down as one piece so it fits the viewport height without scrolling (Login and Register).
-   Set --fit-h to the screen's height at zoom 1. The zoom is min(1, 100dvh / --fit-h), and the min-height fills
-   the viewport at any zoom. Width needs nothing: an auto-width block lays out in the wider space it gains. */
 @utility fit-height {
   --fit: min(1, tan(atan2(100dvh, var(--fit-h))));
   zoom: var(--fit);
   min-height: calc(100dvh / var(--fit));
 }
 
-/* The 120px blueprint grid behind the blue bands (lines are white at 12%), locked to the 1440 frame at
-   any width. A percentage position is relative to (width - 120px), so the frame's left edge
-   (50% of the width - 720px) is written as 50% - 660px. */
 @utility bg-blueprint {
   background-color: var(--color-primary-800);
   background-image:
@@ -119,8 +103,6 @@
   background-position: calc(50% - 660px) -2px;
 }
 
-/* Grows a small control's hit area to at least 44×44 (WCAG 2.5.5), centred on it, without changing the layout.
-   Insets are min(0, 50% - 22px), so a side already 44px or longer is left alone. */
 @utility tap-target {
   position: relative;
 
@@ -132,9 +114,6 @@
   }
 }
 
-/* Figma text styles: family, size, line height, weight and tracking in one class. Figma lays text out on whole-pixel
-   line boxes, so the styles the pages line up on set them in px (44 × 1.2 → 53, 36 × 1.2 → 43, 18 × 1.6 → 29,
-   14 × 1.6 → 22, 12 × 1.6 → 19), which keeps the sections below them on whole pixels. */
 @utility type-heading-l {
   font-family: var(--font-poppins);
   font-size: 72px;
@@ -196,6 +175,12 @@
   line-height: 24px;
   font-weight: 400;
 }
+@utility type-paragraph {
+  font-family: var(--font-satoshi);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+}
 @utility type-body-s {
   font-family: var(--font-satoshi);
   font-size: 14px;
@@ -239,14 +224,12 @@
   font-weight: 500;
 }
 
-/* Anchor jumps (/#courses, #results) glide, unless the visitor asked for less motion. */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
   }
 }
 
-/* Lock the page behind an open modal <dialog> (MobileNav). */
 html:has(dialog:modal) {
   overflow: hidden;
 }

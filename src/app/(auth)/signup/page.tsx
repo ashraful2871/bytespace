@@ -18,7 +18,7 @@ export default function SignupPage() {
     >
       <AuthHeading eyebrow="Create an Account" title="Welcome to ByteSpace" />
 
-      {/* TODO: point the action at the sign-up endpoint once there are accounts (D6: native validation only). */}
+      {/* TODO: submit to a server action once there are user accounts. Until then only the browser validates it. */}
       <form action="#" method="post" className="mt-10 flex flex-col gap-6">
         <AuthField id="signup-name" label="Full Name" name="name" autoComplete="name" placeholder="Jamie Davis" required />
         <AuthField
@@ -45,7 +45,6 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      {/* Figma: the form ends at 524 and this line sits at 646. */}
       <AuthSwitch prompt="Already have an account?" href="/login" label="Login" className="mt-10 md:mt-[122px]" />
     </AuthScreen>
   );

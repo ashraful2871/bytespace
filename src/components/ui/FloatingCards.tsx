@@ -3,13 +3,14 @@ import AvatarStack from "@/components/ui/AvatarStack";
 import FloatingCard from "@/components/ui/FloatingCard";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { happyStudentAvatars } from "@/data/courses";
+import { cn } from "@/lib/cn";
 
-type PositionProps = { className?: string };
-/** default: the hero cards · relaxed: the Features copies, whose titles sit on a 24px line (Figma 34:1031, 34:1038). */
-type VariantProps = { variant?: "default" | "relaxed" };
+type CardProps = {
+  className?: string;
+  variant?: "default" | "relaxed";
+};
 
-// Figma 46:126: 208×70, title and meta row stacked with no gap.
-export function TopicCard({ className = "" }: PositionProps) {
+export function TopicCard({ className }: Pick<CardProps, "className">) {
   return (
     <FloatingCard className={className}>
       <div>
@@ -26,51 +27,57 @@ export function TopicCard({ className = "" }: PositionProps) {
   );
 }
 
-// Figma 1:1797: 232×131 with a 200×8 bar (138 tall in Features). "55%" is Poppins 500, which matches Home.png
-// better than 600. Figma draws the bar a little ahead of the label (112px of 200), hence the separate `barValue`.
 export function ProgressCard({
   value = 55,
   barValue = 56,
   variant = "default",
-  className = "",
-}: PositionProps & VariantProps & { value?: number; barValue?: number }) {
+  className,
+}: CardProps & { value?: number; barValue?: number }) {
   return (
-    <FloatingCard className={`w-[232px] ${className}`}>
-      <p className={`type-label-s ${variant === "relaxed" ? "leading-6" : ""}`}>Learning Progress</p>
-      <p className="w-[200px] font-poppins text-5xl/[1.2] font-medium tracking-[-0.01em]">{value}%</p>
-      <ProgressBar value={barValue} label="Learning progress" className="w-[200px]" />
+    <FloatingCard className={cn("w-[232px]", className)}>
+      <p className={cn("type-label-s", variant === "relaxed" && "leading-6")}>
+        Learning Progress
+      </p>
+      <p className="w-[200px] font-poppins text-5xl/[1.2] font-medium tracking-[-0.01em]">
+        {value}%
+      </p>
+      <ProgressBar
+        value={barValue}
+        label="Learning progress"
+        className="w-[200px]"
+      />
     </FloatingCard>
   );
 }
 
-// Figma 1:1821: 258×121 (123 in Features); seven 43px avatars on a 27px step plus the "2K+" bubble. The auth
-// collage's copy (49:313) is lime, with a blue star and a dark bubble.
 export function HappyStudentsCard({
   variant = "default",
   tone = "white",
-  className = "",
-}: PositionProps & VariantProps & { tone?: "white" | "lime" }) {
+  className,
+}: CardProps & { tone?: "white" | "lime" }) {
   const relaxed = variant === "relaxed";
   const lime = tone === "lime";
-  const star = lime ? "text-primary-800" : "text-secondary-400";
 
   return (
-    <FloatingCard tone={tone} className={`w-[258px] ${className}`}>
+    <FloatingCard tone={tone} className={cn("w-[258px]", className)}>
       <div>
-        <p className={`type-label-m ${relaxed ? "leading-6" : ""}`}>Happy Students</p>
-        {relaxed ? (
-          <p className="flex items-center text-[10px]/[1.5]">
-            <span className="font-bold">4.5</span>&nbsp;<span className="text-neutral-400">(240)</span>
-            <StarIcon size={16} className={star} />
-            <span className="sr-only">average rating from 240 reviews</span>
-          </p>
-        ) : (
-          <p className="flex items-center type-body-xs">
-            4.5&nbsp;<span className="text-neutral-400">(240)</span>
-            <StarIcon size={16} className={star} />
-            <span className="sr-only">average rating from 240 reviews</span>
-          </p>
-        )}
+        <p className={cn("type-label-m", relaxed && "leading-6")}>
+          Happy Students
+        </p>
+        <p
+          className={cn(
+            "flex items-center",
+            relaxed ? "text-[10px]/[1.5]" : "type-body-xs",
+          )}
+        >
+          <span className={relaxed ? "font-bold" : undefined}>4.5</span>&nbsp;
+          <span className="text-neutral-400">(240)</span>
+          <StarIcon
+            size={16}
+            className={lime ? "text-primary-800" : "text-secondary-400"}
+          />
+          <span className="sr-only">average rating from 240 reviews</span>
+        </p>
       </div>
       <AvatarStack
         avatars={happyStudentAvatars}

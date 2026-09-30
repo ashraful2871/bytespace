@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   CategoryIcon,
   FilterAltIcon,
@@ -5,32 +6,27 @@ import {
   SortIcon,
 } from "@/components/icons";
 import Dropdown, { DropdownLink } from "@/components/ui/Dropdown";
+import { categories, learningPaths } from "@/data/categories";
+import { levels } from "@/data/courses";
 import {
-  categories,
   coursesHref,
-  learningPaths,
-  levels,
   sortOptions,
   type CourseQuery,
-} from "@/data/courses";
-
-const trigger =
-  "flex h-12 items-center gap-1 rounded-pill border border-neutral-200 bg-white px-3 type-label-m whitespace-nowrap text-neutral-950 transition-colors hover:bg-neutral-50 group-open:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-hidden sm:px-4";
-
-// A picked value replaces the trigger's label, so the label stays in the name (sr-only) and long values truncate on
-// phones; the triggers wrap rather than push the page sideways.
-const value = "max-w-28 truncate sm:max-w-none";
-
-const leftPanel = "max-sm:inset-x-0 sm:left-0";
+} from "@/lib/course-search";
+import { cn } from "@/lib/cn";
 
 type FilterBarProps = {
   query: CourseQuery;
-  /** The page the menu links filter: the search page, or a creator profile. */
   pathname?: string;
 };
 
-export default function FilterBar({ query, pathname = "/courses" }: FilterBarProps) {
-  const href = (patch: Partial<CourseQuery>) => coursesHref(query, patch, pathname);
+export default function FilterBar({
+  query,
+  pathname = "/courses",
+}: FilterBarProps) {
+  const href = (patch: Partial<CourseQuery>) =>
+    coursesHref(query, patch, pathname);
+
   const level = levels.find(
     (l) => l.toLowerCase() === query.level?.toLowerCase(),
   );
@@ -38,22 +34,16 @@ export default function FilterBar({ query, pathname = "/courses" }: FilterBarPro
     (c) => c.slug === query.category && c.slug !== "featured",
   );
   const sort =
-    sortOptions.find((o) => o.value === query.sort) ?? sortOptions[0];
+    sortOptions.find((option) => option.value === query.sort) ?? sortOptions[0];
+  const isFeatured = !query.category || query.category === "featured";
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
       <div className="relative flex min-w-0 flex-wrap gap-2 sm:gap-4">
-        <Dropdown
-          name="course-filters"
-          className="max-sm:static"
-          summary={
-            <>
-              <FilterAltIcon />
-              Filter
-            </>
-          }
-          summaryClassName={trigger}
-          panelClassName={`${leftPanel} sm:w-60`}
+        <FilterMenu
+          icon={<FilterAltIcon />}
+          label="Filter"
+          panelClassName="sm:w-60"
         >
           {learningPaths.map((path) => (
             <DropdownLink
@@ -66,31 +56,15 @@ export default function FilterBar({ query, pathname = "/courses" }: FilterBarPro
           ))}
           <li className="my-1 border-t border-neutral-100" aria-hidden />
           <DropdownLink href={pathname}>Clear filters</DropdownLink>
-        </Dropdown>
+        </FilterMenu>
 
-        <Dropdown
-          name="course-filters"
-          className="max-sm:static"
-          summary={
-            <>
-              <SignalCellularAltIcon />
-              {level ? (
-                <span className={value}>
-                  <span className="sr-only">Level: </span>
-                  {level}
-                </span>
-              ) : (
-                "Level"
-              )}
-            </>
-          }
-          summaryClassName={trigger}
-          panelClassName={`${leftPanel} sm:w-52`}
+        <FilterMenu
+          icon={<SignalCellularAltIcon />}
+          label="Level"
+          value={level}
+          panelClassName="sm:w-52"
         >
-          <DropdownLink
-            href={href({ level: undefined })}
-            active={!level}
-          >
+          <DropdownLink href={href({ level: undefined })} active={!level}>
             Any level
           </DropdownLink>
           {levels.map((l) => (
@@ -102,67 +76,95 @@ export default function FilterBar({ query, pathname = "/courses" }: FilterBarPro
               {l}
             </DropdownLink>
           ))}
-        </Dropdown>
+        </FilterMenu>
 
-        <Dropdown
-          name="course-filters"
-          className="max-sm:static"
-          summary={
-            <>
-              <CategoryIcon />
-              {category ? (
-                <span className={value}>
-                  <span className="sr-only">Category: </span>
-                  {category.label}
-                </span>
-              ) : (
-                "Category"
-              )}
-            </>
-          }
-          summaryClassName={trigger}
-          panelClassName={`${leftPanel} max-h-[min(60vh,28rem)] overflow-y-auto sm:grid sm:w-[30rem] sm:grid-cols-2`}
+        <FilterMenu
+          icon={<CategoryIcon />}
+          label="Category"
+          value={category?.label}
+          panelClassName="max-h-[min(60vh,28rem)] overflow-y-auto sm:grid sm:w-[30rem] sm:grid-cols-2"
         >
           {categories.map((c) => (
             <DropdownLink
               key={c.slug}
               href={href({ category: c.slug })}
               active={
-                c.slug === "featured"
-                  ? !query.category || query.category === "featured"
-                  : c.slug === query.category
+                c.slug === "featured" ? isFeatured : c.slug === query.category
               }
             >
               {c.label}
             </DropdownLink>
           ))}
-        </Dropdown>
+        </FilterMenu>
       </div>
 
-      <Dropdown
-        name="course-filters"
-        summary={
-          <>
-            <SortIcon />
-            <span className={value}>
-              <span className="sr-only">Sort: </span>
-              {sort.label}
-            </span>
-          </>
-        }
-        summaryClassName={trigger}
-        panelClassName="left-0 w-56 sm:right-0 sm:left-auto"
+      <FilterMenu
+        icon={<SortIcon />}
+        label="Sort"
+        value={sort.label}
+        align="right"
+        panelClassName="w-56"
       >
-        {sortOptions.map((o) => (
+        {sortOptions.map((option) => (
           <DropdownLink
-            key={o.value}
-            href={href({ sort: o.value })}
-            active={o.value === sort.value}
+            key={option.value}
+            href={href({ sort: option.value })}
+            active={option.value === sort.value}
           >
-            {o.label}
+            {option.label}
           </DropdownLink>
         ))}
-      </Dropdown>
+      </FilterMenu>
     </div>
+  );
+}
+
+const trigger =
+  "flex h-12 items-center gap-1 rounded-pill border border-neutral-200 bg-white px-3 type-label-m whitespace-nowrap text-neutral-950 transition-colors hover:bg-neutral-50 group-open:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-hidden sm:px-4";
+
+type FilterMenuProps = {
+  icon: ReactNode;
+  label: string;
+  value?: string;
+  align?: "left" | "right";
+  panelClassName?: string;
+  children: ReactNode;
+};
+
+function FilterMenu({
+  icon,
+  label,
+  value,
+  align = "left",
+  panelClassName,
+  children,
+}: FilterMenuProps) {
+  return (
+    <Dropdown
+      name="course-filters"
+      className={align === "left" ? "max-sm:static" : undefined}
+      summaryClassName={trigger}
+      panelClassName={cn(
+        align === "left"
+          ? "max-sm:inset-x-0 sm:left-0"
+          : "left-0 sm:right-0 sm:left-auto",
+        panelClassName,
+      )}
+      summary={
+        <>
+          {icon}
+          {value ? (
+            <span className="max-w-28 truncate sm:max-w-none">
+              <span className="sr-only">{label}: </span>
+              {value}
+            </span>
+          ) : (
+            label
+          )}
+        </>
+      }
+    >
+      {children}
+    </Dropdown>
   );
 }

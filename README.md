@@ -1,37 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ByteSpace
 
-## Getting Started
+The marketing site for ByteSpace, an online learning platform, built from the Figma design with Next.js (App Router),
+React 19 and Tailwind CSS v4.
 
-First, run the development server:
+## Pages
+
+- `/`: landing page (hero, brands, courses, learning paths, features, creator call to action, testimonials)
+- `/courses`: course search with a text query, filters, sorting and pagination, all kept in the URL
+- `/courses/[slug]`: course details, with About, Lessons and Reviews tabs
+- `/creators/[slug]`: creator profile with their courses
+- `/login` and `/signup`
+- a custom 404 page
+
+There's no backend yet. Course data lives in `src/data`, and the forms only use the browser's built-in validation.
+
+## Getting started
 
 ```bash
-
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script          | What it does                                    |
+| --------------- | ----------------------------------------------- |
+| `npm run dev`   | Development server                              |
+| `npm run build` | Production build (also type-checks)             |
+| `npm run start` | Serves the production build                     |
+| `npm run lint`  | ESLint                                          |
+| `npm run icons` | Regenerates `src/components/icons` from Material Symbols |
+| `npm run assets`| Rebuilds `public/images` from the exported Figma assets  |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+```
+src/
+  app/
+    (site)/         pages that share the footer: home, courses, creators
+    (auth)/         login and signup, full screen without a footer
+    shared-metadata.ts   title / description / Open Graph helper used by every route
+    sitemap.ts, robots.ts
+  components/
+    sections/       the landing page sections
+    layout/         header, footer, mobile menu, the blue page band
+    ui/             reusable building blocks (Button, Chip, CourseCard, Dropdown, ...)
+    course/         course detail page parts
+    search/         search form, filters, pagination
+    auth/, creator/
+    icons/          generated SVG icon components
+  data/             static content: courses, categories, creators, navigation
+  lib/              helpers: course search and URL building, `cn()` for class names
+```
 
-To learn more about Next.js, take a look at the following resources:
+A few choices worth knowing about:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Server Components by default.** Only `NavLink` (active link state), `MobileNav` (the menu dialog) and
+  `ScrollToTop` run on the client. The search filters are plain links, and the dropdowns are native `<details>`
+  elements, so they work without JavaScript.
+- **URL state.** Search, filters, sort and page all live in the query string, so every result page can be linked
+  and shared, and the back button works.
+- **Static generation.** Course and creator pages are prerendered with `generateStaticParams`; unknown slugs return
+  a 404.
+- **Design tokens** (colours, radii, the Figma text styles as `type-*` utilities) are defined in
+  `src/app/globals.css` with Tailwind's `@theme`.
+- **Scroll performance.** The decorative shadows and glows are pre-rendered images and CSS gradients rather than
+  `filter: blur()`, which was noticeably slow to repaint while scrolling on low-end GPUs.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployed on Vercel. Set `NEXT_PUBLIC_SITE_URL` to the production URL so canonical links, Open Graph URLs and the
+sitemap point at the right domain.

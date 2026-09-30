@@ -8,10 +8,6 @@ export const metadata: Metadata = {
   description: "The page you're looking for doesn't exist or has moved.",
 };
 
-// Figma 63:252. The "404" box is 920×480 at y=160, but its glyphs measure as Poppins 600 at 460px (882 wide, top at
-// y=225), so the numeral is 460px with a 480px line box, nudged 5.5px down. The copy block (935 wide at y=521) then
-// overlaps it by 124.5px. Both offsets are fractions of the font size, so they scale with it. The lime fades out as
-// sampled from the screenshot: solid to 20%, 85% at 50%, gone just past the box.
 export default function NotFound() {
   return (
     <>

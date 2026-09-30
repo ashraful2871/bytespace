@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import BlueBand from "@/components/layout/BlueBand";
 
 /**
- * Login and signup: one full-screen blueprint band with the logo mark and no footer. From md the whole band scales
- * to fit the window height, so the page never scrolls: the screen is 944px tall from lg (the card ends at 904) and
- * 1082px stacked (header 120, copy 98, gap 40, card 784, 40 below). Phones keep their natural height and scroll.
+ * Login and signup: one full-screen blue band with just the logo mark and no footer. From md the screen scales down
+ * to fit the window height so it never scrolls. --fit-h is the screen's natural height: 944px side by side (lg) and
+ * 1082px stacked. Phones keep their natural height and scroll.
  */
 export default function AuthLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (

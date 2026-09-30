@@ -1,10 +1,6 @@
 export type Level = "Beginner" | "Intermediate" | "Advanced";
 
-export type IncludeIcon =
-  | "article"
-  | "videocam"
-  | "workspace-premium"
-  | "support-agent";
+export type IncludeIcon = "topic" | "videocam" | "badge" | "consultation";
 
 export type Review = {
   name: string;
@@ -34,7 +30,8 @@ export type Course = {
   reviewsCount: number;
   students: number;
   description: string[];
-  sneakPeek: string[];
+  sneakPeek: { src: string; alt: string }[];
+  enrollText: string;
   keyPoints: string[];
   curriculum: {
     lessons: number;
@@ -55,74 +52,7 @@ export type Course = {
   reviews: Review[];
 };
 
-export type Category = {
-  slug: string;
-  label: string;
-};
-
-const category = (label: string): Category => ({
-  slug: label
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, ""),
-  label,
-});
-
-export const categoryRows: Category[][] = [
-  [
-    "Featured",
-    "Music",
-    "Drawing & Painting",
-    "Marketing",
-    "Animation",
-    "Social Media",
-    "UI/UX Design",
-    "Creative Marketing",
-  ],
-  [
-    "Digital Illustration",
-    "Film & Video",
-    "Crafts",
-    "Freelance & Entrepreneurship",
-    "Graphic Design",
-    "Photography",
-  ],
-  ["Productivity", "Web Development", "Data Science", "Cooking"],
-].map((row) => row.map(category));
-
-export const categories: Category[] = categoryRows.flat();
-
-export const searchCategories: Category[] = [
-  ...categoryRows[0],
-  ...categories.filter((c) => c.slug === "cooking"),
-];
-
 export const levels: Level[] = ["Beginner", "Intermediate", "Advanced"];
-
-export const learningPaths = [
-  { slug: "design", label: "Design", icon: "design" },
-  { slug: "development", label: "Development", icon: "development" },
-  { slug: "it-and-software", label: "IT & Software", icon: "it" },
-  { slug: "business", label: "Business", icon: "business" },
-  { slug: "marketing", label: "Marketing", icon: "marketing" },
-  { slug: "photography", label: "Photography", icon: "photography" },
-] as const;
-
-const pathCategories: Record<string, string[]> = {
-  design: [
-    "ui-ux-design",
-    "graphic-design",
-    "digital-illustration",
-    "drawing-and-painting",
-    "animation",
-  ],
-  development: ["web-development"],
-  "it-and-software": ["data-science", "web-development"],
-  business: ["freelance-and-entrepreneurship", "productivity"],
-  marketing: ["marketing", "creative-marketing", "social-media"],
-  photography: ["photography", "film-and-video"],
-};
 
 export const learnerAvatars = [1, 2, 3, 4].map(
   (n) => `/images/avatars/learner-${n}.webp`,
@@ -153,7 +83,14 @@ const detail = {
     "In the initial modules, you'll establish a solid foundation by immersing yourself in the foundational concepts that form the backbone of digital asset creation. Understand the fundamental elements that constitute compelling digital content and gain proficiency in leveraging these elements to communicate effectively in the digital realm.",
     "As you progress through the course, you'll ascend to higher levels of expertise, delving into the nuances of design principles that drive impactful creations. Uncover the secrets behind effective visual communication, exploring color theory, typography, and layout strategies that elevate your digital assets to new heights. Engage in hands-on exercises that reinforce your understanding, allowing you to apply these principles in practical scenarios.",
   ],
-  sneakPeek: [1, 2, 3, 4].map((n) => `/images/course/sneak-${n}.webp`),
+  sneakPeek: [
+    "Hand sketching wireframes on paper",
+    "Laptop showing a design dashboard",
+    "Desk with a plant and screens of UI work",
+    "Two phones showing colourful app screens",
+  ].map((alt, i) => ({ src: `/images/course/sneak-${i + 1}.webp`, alt })),
+  enrollText:
+    "Ready to Dive In? Enroll Now and Start Building Your Digital Future!",
   keyPoints: [
     "Foundational Concepts",
     "Design Principles Mastery",
@@ -175,10 +112,10 @@ const detail = {
     more: 99,
   },
   includes: [
-    { icon: "article", label: "Learning Resources" },
+    { icon: "topic", label: "Learning Resources" },
     { icon: "videocam", label: "Quality Lesson Videos" },
-    { icon: "workspace-premium", label: "Certificate of Completion" },
-    { icon: "support-agent", label: "Private Consultation" },
+    { icon: "badge", label: "Certificate of Completion" },
+    { icon: "consultation", label: "Private Consultation" },
   ],
   modulesIntro:
     "Immerse yourself in the course content as we break down each module into comprehensive lessons, providing practical insights and hands-on experiences.",
@@ -257,9 +194,8 @@ const detail = {
   ],
 } satisfies Partial<Course>;
 
-type Seed = Pick<Course, "slug" | "title" | "category" | "image"> & {
-  fullTitle?: string;
-};
+type Seed = Pick<Course, "slug" | "title" | "category" | "image"> &
+  Partial<Pick<Course, "fullTitle" | "rating" | "level">>;
 
 const seeds: Seed[] = [
   {
@@ -272,6 +208,8 @@ const seeds: Seed[] = [
     slug: "build-digital-asset",
     title: "Build Digital Asset",
     fullTitle: "Build Digital Asset: A Comprehensive Guide",
+    rating: 4.8,
+    level: "Intermediate",
     category: "graphic-design",
     image: "/images/courses/course-2.png",
   },
@@ -310,128 +248,4 @@ export const courses: Course[] = seeds.map(({ fullTitle, ...seed }) => ({
 
 export function getCourse(slug: string): Course | undefined {
   return courses.find((course) => course.slug === slug);
-}
-
-export const sortOptions = [
-  { value: "relevant", label: "Most relevant" },
-  { value: "popular", label: "Most popular" },
-  { value: "rating", label: "Highest rated" },
-  { value: "price-asc", label: "Price: low to high" },
-  { value: "price-desc", label: "Price: high to low" },
-] as const;
-
-export type Sort = (typeof sortOptions)[number]["value"];
-
-export type CourseQuery = {
-  q?: string;
-  category?: string;
-  level?: string;
-  sort?: string;
-  page?: number;
-  perPage?: number;
-};
-
-type SearchParams = Record<string, string | string[] | undefined>;
-
-export function parseCourseQuery(params: SearchParams): CourseQuery {
-  const first = (key: string) => {
-    const value = params[key];
-    return (Array.isArray(value) ? value[0] : value) || undefined;
-  };
-
-  return {
-    q: first("q"),
-    category: first("category"),
-    level: first("level"),
-    sort: first("sort"),
-    page: Number(first("page")) || 1,
-  };
-}
-
-export function coursesHref(
-  query: CourseQuery,
-  patch: Partial<CourseQuery> = {},
-) {
-  const { q, category, level, sort, page } = {
-    ...query,
-    page: undefined,
-    ...patch,
-  };
-  const params = new URLSearchParams();
-  if (q) params.set("q", q);
-  if (category && category !== "featured") params.set("category", category);
-  if (level) params.set("level", level);
-  if (sort && sort !== "relevant") params.set("sort", sort);
-  if (page && page > 1) params.set("page", String(page));
-  const search = params.toString();
-  return search ? `/courses?${search}` : "/courses";
-}
-
-const CATALOGUE_REPEAT = 15;
-
-const sorters: Record<Sort, ((a: Course, b: Course) => number) | null> = {
-  relevant: null,
-  popular: (a, b) => b.students - a.students,
-  rating: (a, b) => b.rating - a.rating,
-  "price-asc": (a, b) => a.price - b.price,
-  "price-desc": (a, b) => b.price - a.price,
-};
-
-function inCategory(course: Course, slug: string) {
-  return (
-    slug === "featured" ||
-    course.category === slug ||
-    (pathCategories[slug]?.includes(course.category) ?? false)
-  );
-}
-
-export function listCourses({
-  q,
-  category,
-  level,
-  sort,
-  page = 1,
-  perPage = 18,
-}: CourseQuery = {}) {
-  const query = q?.trim().toLowerCase();
-  const categoryLabel = (slug: string) =>
-    categories.find((c) => c.slug === slug)?.label ?? "";
-
-  let matches = courses.filter(
-    (course) =>
-      (!query ||
-        [
-          course.title,
-          course.fullTitle,
-          course.author,
-          categoryLabel(course.category),
-        ].some((field) => field.toLowerCase().includes(query))) &&
-      (!category || inCategory(course, category)) &&
-      (!level || course.level.toLowerCase() === level.toLowerCase()),
-  );
-
-  const sorter = sorters[sort as Sort];
-  if (sorter) matches = matches.toSorted(sorter);
-
-  const filtered = Boolean(
-    query || (category && category !== "featured") || level,
-  );
-  const pool = (
-    filtered
-      ? [matches]
-      : Array.from({ length: CATALOGUE_REPEAT }, () => matches)
-  ).flatMap((run, r) =>
-    run.map((course) => ({ id: `${course.slug}-${r}`, course })),
-  );
-
-  const pageCount = Math.max(1, Math.ceil(pool.length / perPage));
-  const current = Math.min(Math.max(1, Math.floor(page) || 1), pageCount);
-
-  return {
-    items: pool.slice((current - 1) * perPage, current * perPage),
-    total: pool.length,
-    page: current,
-    pageCount,
-    perPage,
-  };
 }

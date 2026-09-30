@@ -6,16 +6,12 @@ import NavLink from "@/components/layout/NavLink";
 import { authNav, mainNav } from "@/data/navigation";
 
 type HeaderProps = {
-  /** default: logo, nav, auth links and cart · auth: the logo mark only (login and signup screens). */
   variant?: "default" | "auth";
 };
 
 const link =
   "rounded-sm transition-colors hover:text-secondary-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary-400";
 
-// Figma 1:1778: a transparent 120px bar with top-aligned items: logo y=35, auth group y=48, and the nav
-// (the active item is 16/1.2, the rest 16/1.6, so it sits higher). Figma puts the nav box at y=47, but
-// Home.png renders its glyphs 2px lower than a browser does at 47, so it is placed at 49.
 export default function Header({ variant = "default" }: HeaderProps) {
   if (variant === "auth") {
     return (
@@ -49,11 +45,19 @@ export default function Header({ variant = "default" }: HeaderProps) {
 
         <div className="mt-12 flex items-center justify-end gap-6 type-body-m">
           {authNav.map((item) => (
-            <Link key={item.label} href={item.href} className={`hidden tap-target md:inline ${link}`}>
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`hidden tap-target md:inline ${link}`}
+            >
               {item.label}
             </Link>
           ))}
-          <Link href="#" aria-label="Cart" className={`flex tap-target ${link}`}>
+          <Link
+            href="#"
+            aria-label="Cart"
+            className={`flex tap-target ${link}`}
+          >
             <ShoppingBagIcon />
           </Link>
           <MobileNav />

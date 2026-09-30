@@ -1,13 +1,10 @@
 import Chip from "@/components/ui/Chip";
-import {
-  coursesHref,
-  searchCategories,
-  type CourseQuery,
-} from "@/data/courses";
+import { searchCategories } from "@/data/categories";
+import { coursesHref, type CourseQuery } from "@/lib/course-search";
 
 export default function CategoryTabs({
   query,
-  className = "",
+  className,
 }: {
   query: CourseQuery;
   className?: string;

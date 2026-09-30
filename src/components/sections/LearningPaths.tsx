@@ -10,9 +10,9 @@ import {
   type IconProps,
 } from "@/components/icons";
 import SectionHeader from "@/components/ui/SectionHeader";
-import { learningPaths } from "@/data/courses";
+import { learningPaths, type LearningPathIcon } from "@/data/categories";
 
-const icons: Record<(typeof learningPaths)[number]["icon"], ComponentType<IconProps>> = {
+const icons: Record<LearningPathIcon, ComponentType<IconProps>> = {
   design: DesignIcon,
   development: DeveloperModeIcon,
   it: ComputerIcon,

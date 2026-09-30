@@ -1,30 +1,54 @@
 import { StarIcon } from "@/components/icons";
-
-type RatingStarsProps = {
-  /** 0–5; fractions fill part of a star. */
-  value: number;
-  size?: number;
-  /** Colour of the filled stars; the empty ones sit underneath in a muted tone. */
-  tone?: "lime" | "blue";
-  className?: string;
-};
+import { cn } from "@/lib/cn";
 
 const tones = {
   lime: "text-secondary-400",
   blue: "text-primary-800",
+  dark: "text-neutral-700",
 };
 
-const stars = (size: number) =>
-  Array.from({ length: 5 }, (_, i) => <StarIcon key={i} size={size} className="shrink-0" />);
+type RatingStarsProps = {
+  value: number;
+  size?: number;
+  gap?: number;
+  tone?: keyof typeof tones;
+  className?: string;
+};
 
-export default function RatingStars({ value, size = 24, tone = "lime", className = "" }: RatingStarsProps) {
-  const pct = (Math.min(5, Math.max(0, value)) / 5) * 100;
+function FiveStars({ size, gap }: { size: number; gap: number }) {
+  return (
+    <span className="flex" style={{ gap }}>
+      {Array.from({ length: 5 }, (_, i) => (
+        <StarIcon key={i} size={size} className="shrink-0" />
+      ))}
+    </span>
+  );
+}
+
+export default function RatingStars({
+  value,
+  size = 24,
+  gap = 4,
+  tone = "lime",
+  className,
+}: RatingStarsProps) {
+  const rating = Math.min(5, Math.max(0, value));
+  const filledWidth = Math.floor(rating) * (size + gap) + (rating % 1) * size;
 
   return (
-    <span role="img" aria-label={`Rated ${value} out of 5`} className={`relative inline-flex ${className}`}>
-      <span className="flex text-neutral-100">{stars(size)}</span>
-      <span className={`absolute inset-y-0 left-0 flex overflow-hidden ${tones[tone]}`} style={{ width: `${pct}%` }}>
-        {stars(size)}
+    <span
+      role="img"
+      aria-label={`Rated ${value} out of 5`}
+      className={cn("relative inline-flex", className)}
+    >
+      <span className="text-neutral-100">
+        <FiveStars size={size} gap={gap} />
+      </span>
+      <span
+        className={cn("absolute inset-y-0 left-0 overflow-hidden", tones[tone])}
+        style={{ width: filledWidth }}
+      >
+        <FiveStars size={size} gap={gap} />
       </span>
     </span>
   );

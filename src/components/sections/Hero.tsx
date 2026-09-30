@@ -1,6 +1,7 @@
+import Form from "next/form";
 import Image from "next/image";
-import { SearchIcon } from "@/components/icons";
 import BlueBand from "@/components/layout/BlueBand";
+import SearchField from "@/components/search/SearchField";
 import { Button } from "@/components/ui/Button";
 import {
   HappyStudentsCard,
@@ -28,7 +29,7 @@ const ornaments = [
 
 export default function Hero() {
   return (
-    <BlueBand height={1024} className="lg:min-h-(--band-h)">
+    <BlueBand height={1024} zoom className="lg:min-h-(--band-h)">
       <div aria-hidden className="design-stage z-20 hidden md:block">
         {ornaments.map((ornament) => (
           <Ornament key={`${ornament.shape}-${ornament.x}`} {...ornament} />
@@ -46,23 +47,17 @@ export default function Hero() {
           </p>
         </div>
 
-        <form
-          role="search"
+        <Form
           action="/courses"
+          role="search"
           className="flex w-full max-w-[581px] flex-col gap-4 sm:flex-row sm:items-start"
         >
-          <label className="flex h-[52px] items-center gap-2 rounded-pill bg-white px-6 py-3 text-neutral-400 focus-within:ring-2 focus-within:ring-secondary-400 sm:flex-1">
-            <SearchIcon className="shrink-0" />
-            <span className="sr-only">Search courses</span>
-            <input
-              type="search"
-              name="q"
-              placeholder="Course, topic, creator"
-              className="w-full min-w-0 bg-transparent type-body-l text-neutral-950 outline-none placeholder:text-neutral-500"
-            />
-          </label>
+          <SearchField
+            placeholder="Course, topic, creator"
+            className="sm:flex-1"
+          />
           <Button type="submit">Search</Button>
-        </form>
+        </Form>
       </div>
 
       <HeroVisual />
@@ -70,20 +65,18 @@ export default function Hero() {
   );
 }
 
-// A picture of the product, so it is hidden from assistive tech.
 function HeroVisual() {
   return (
     <div
       aria-hidden
       className="relative mx-auto mt-6 h-[512px] w-[1150px] [zoom:0.31] sm:[zoom:0.54] md:[zoom:0.64] lg:absolute lg:top-[512px] lg:left-[calc(50%-575px)] lg:mt-0 lg:[zoom:1]"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src="/images/svg/lime-arc.svg"
         alt=""
-        aria-hidden
         width={1149}
         height={1149}
+        loading="lazy"
         className="absolute top-[70px] left-0 max-w-none"
       />
       <FloatShadow
@@ -92,7 +85,6 @@ function HeroVisual() {
         y={0}
         width={578}
         height={541}
-        preload
       />
       <Image
         src="/images/hero/student.webp"

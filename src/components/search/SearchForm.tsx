@@ -1,34 +1,22 @@
 import Form from "next/form";
-import { KeyboardArrowDownIcon, SearchIcon } from "@/components/icons";
+import { KeyboardArrowDownIcon } from "@/components/icons";
+import SearchField from "@/components/search/SearchField";
 import Dropdown, { DropdownLink } from "@/components/ui/Dropdown";
-import { coursesHref, type CourseQuery } from "@/data/courses";
-import { mainNav } from "@/data/navigation";
+import { creatorsHref } from "@/data/navigation";
+import { coursesHref, type CourseQuery } from "@/lib/course-search";
 
-const creatorsHref =
-  mainNav.find((link) => link.label === "Creators")?.href ?? "/";
+const keptFilters = ["category", "level", "sort"] as const;
 
 export default function SearchForm({ query }: { query: CourseQuery }) {
-  const kept = (["category", "level", "sort"] as const).filter(
-    (key) => query[key],
-  );
-
   return (
     <div className="flex w-full max-w-[624px] flex-col gap-4 sm:flex-row sm:items-start">
       <Form action="/courses" role="search" className="sm:flex-1">
-        <label className="flex h-[52px] items-center gap-2 rounded-pill bg-white px-6 text-neutral-400 focus-within:ring-2 focus-within:ring-secondary-400">
-          <SearchIcon className="shrink-0" />
-          <span className="sr-only">Search courses</span>
-          <input
-            type="search"
-            name="q"
-            defaultValue={query.q}
-            placeholder="Search"
-            className="w-full min-w-0 bg-transparent type-body-l text-neutral-950 outline-none placeholder:text-neutral-500"
-          />
-        </label>
-        {kept.map((key) => (
-          <input key={key} type="hidden" name={key} value={query[key]} />
-        ))}
+        <SearchField placeholder="Search" defaultValue={query.q} />
+        {keptFilters.map((key) =>
+          query[key] ? (
+            <input key={key} type="hidden" name={key} value={query[key]} />
+          ) : null,
+        )}
       </Form>
 
       <Dropdown
@@ -36,7 +24,7 @@ export default function SearchForm({ query }: { query: CourseQuery }) {
         summary={
           <>
             Courses
-            <KeyboardArrowDownIcon className="transition-transform group-open:rotate-180" />
+            <KeyboardArrowDownIcon className="transition-transform group-open:rotate-180 motion-reduce:transition-none" />
           </>
         }
         summaryClassName="flex h-12 items-center justify-center gap-2 rounded-pill bg-secondary-400 px-6 type-label-l text-neutral-950 transition-colors hover:bg-secondary-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-hidden"

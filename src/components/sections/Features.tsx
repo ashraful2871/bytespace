@@ -101,7 +101,6 @@ export default function Features() {
   );
 }
 
-// A picture of the product, so it is hidden from assistive tech; inert keeps its course card out of the tab order.
 function PathVisual() {
   return (
     <div
@@ -179,7 +178,7 @@ function CreatorVisual() {
         width={435}
         height={596}
       />
-      {/* Figma 34:1011: the image fill is cropped inside a 435×596 frame. */}
+      {/* The photo is larger than its frame and cropped, as in the design. */}
       <div className="absolute top-0 left-7 h-[596px] w-[435px] overflow-hidden">
         <Image
           src="/images/features/creator-photo.webp"

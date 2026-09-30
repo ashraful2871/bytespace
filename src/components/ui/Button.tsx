@@ -1,14 +1,12 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
+import { cn } from "@/lib/cn";
 
 type Variant = "primary" | "outline" | "outline-light" | "white";
 type Size = "lg" | "md" | "sm";
 
 type StyleProps = {
-  /** primary: lime CTA · outline: white with a grey border · outline-light: clear with a white border, on the blue
-   *  bands · white: pill on the blue bands. */
   variant?: Variant;
-  /** Defaults to the variant's Figma size: primary and outline-light lg (46px), outline md (48px), white sm (40px). */
   size?: Size;
   fullWidth?: boolean;
 };
@@ -18,7 +16,8 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary: "bg-secondary-400 text-neutral-950 hover:bg-secondary-300",
-  outline: "border border-neutral-200 bg-white text-neutral-950 hover:bg-neutral-50",
+  outline:
+    "border border-neutral-200 bg-white text-neutral-950 hover:bg-neutral-50",
   "outline-light": "border border-white/40 text-neutral-50 hover:bg-white/10",
   white: "bg-white text-neutral-950 hover:bg-neutral-50",
 };
@@ -29,20 +28,58 @@ const sizes: Record<Size, string> = {
   sm: "h-10 px-6 type-label-m",
 };
 
-const defaultSize: Record<Variant, Size> = { primary: "lg", outline: "md", "outline-light": "lg", white: "sm" };
+const defaultSize: Record<Variant, Size> = {
+  primary: "lg",
+  outline: "md",
+  "outline-light": "lg",
+  white: "sm",
+};
 
-export function buttonClasses({ variant = "primary", size, fullWidth = false }: StyleProps = {}) {
-  return `${base} ${variants[variant]} ${sizes[size ?? defaultSize[variant]]} ${fullWidth ? "w-full" : ""}`;
+export function buttonClasses({
+  variant = "primary",
+  size,
+  fullWidth = false,
+}: StyleProps = {}) {
+  return cn(
+    base,
+    variants[variant],
+    sizes[size ?? defaultSize[variant]],
+    fullWidth && "w-full",
+  );
 }
 
 type ButtonProps = ComponentProps<"button"> & StyleProps;
 
-export function Button({ variant, size, fullWidth, className = "", type = "button", ...props }: ButtonProps) {
-  return <button type={type} className={`${buttonClasses({ variant, size, fullWidth })} ${className}`} {...props} />;
+export function Button({
+  variant,
+  size,
+  fullWidth,
+  className,
+  type = "button",
+  ...props
+}: ButtonProps) {
+  return (
+    <button
+      type={type}
+      className={cn(buttonClasses({ variant, size, fullWidth }), className)}
+      {...props}
+    />
+  );
 }
 
 type ButtonLinkProps = ComponentProps<typeof Link> & StyleProps;
 
-export function ButtonLink({ variant, size, fullWidth, className = "", ...props }: ButtonLinkProps) {
-  return <Link className={`${buttonClasses({ variant, size, fullWidth })} ${className}`} {...props} />;
+export function ButtonLink({
+  variant,
+  size,
+  fullWidth,
+  className,
+  ...props
+}: ButtonLinkProps) {
+  return (
+    <Link
+      className={cn(buttonClasses({ variant, size, fullWidth }), className)}
+      {...props}
+    />
+  );
 }

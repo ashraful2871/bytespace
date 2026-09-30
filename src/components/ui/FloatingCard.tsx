@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 type FloatingCardProps = {
-  /** white: default card · blue: primary-800 card with light text. */
-  tone?: "white" | "blue";
+  tone?: "white" | "blue" | "lime";
   className?: string;
   style?: CSSProperties;
   children: ReactNode;
@@ -11,16 +11,24 @@ type FloatingCardProps = {
 const tones = {
   white: "bg-white text-neutral-950",
   blue: "bg-primary-800 text-neutral-50",
+  lime: "bg-secondary-400 text-neutral-950",
 };
 
-/**
- * The card base used by the hero and Features compositions (content and position via props). Figma gives it a 10px
- * background blur, but both fills are opaque, so it would never show; it is left out because a backdrop-filter
- * re-blurs on every scroll frame.
- */
-export default function FloatingCard({ tone = "white", className = "", style, children }: FloatingCardProps) {
+export default function FloatingCard({
+  tone = "white",
+  className,
+  style,
+  children,
+}: FloatingCardProps) {
   return (
-    <div className={`flex flex-col gap-2 rounded-float p-4 ${tones[tone]} ${className}`} style={style}>
+    <div
+      className={cn(
+        "flex flex-col gap-2 rounded-float p-4",
+        tones[tone],
+        className,
+      )}
+      style={style}
+    >
       {children}
     </div>
   );

@@ -14,8 +14,9 @@ export default function CourseVideo({ title, className = "" }: { title: string; 
         src="/images/course/video-thumb.webp"
         alt=""
         fill
-        priority
-        sizes="(min-width: 1280px) 720px, (min-width: 1024px) calc(100vw - 2 * var(--gutter) - 400px), 100vw"
+        loading="eager"
+        fetchPriority="high"
+        sizes="(min-width: 1280px) 720px, (min-width: 1024px) 60vw, 100vw"
         className="object-cover"
       />
       <button

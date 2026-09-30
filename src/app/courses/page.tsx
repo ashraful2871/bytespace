@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/app/shared-metadata";
 import BlueBand from "@/components/layout/BlueBand";
 import Footer from "@/components/layout/Footer";
 import CategoryTabs from "@/components/search/CategoryTabs";
@@ -9,10 +10,11 @@ import { ButtonLink } from "@/components/ui/Button";
 import CourseCard from "@/components/ui/CourseCard";
 import { coursesHref, listCourses, parseCourseQuery } from "@/data/courses";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Find Your Next Course",
   description: "Search ByteSpace courses by topic, category and level.",
-};
+  path: "/courses",
+});
 
 // Figma 55:117 at 1440: band 0–360 (title at 164), filter bar at 432, chips at 512, an 18-card grid at 632,
 // pagination at 3208 and the footer at 3328.

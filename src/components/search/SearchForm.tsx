@@ -23,7 +23,7 @@ export default function SearchForm({ query }: { query: CourseQuery }) {
             name="q"
             defaultValue={query.q}
             placeholder="Search"
-            className="w-full min-w-0 bg-transparent type-body-l text-neutral-950 outline-none placeholder:text-neutral-500"
+            className="w-full min-w-0 bg-transparent type-body-l text-neutral-950 outline-hidden placeholder:text-neutral-500"
           />
         </label>
         {kept.map((key) => (
@@ -36,7 +36,7 @@ export default function SearchForm({ query }: { query: CourseQuery }) {
         summary={
           <>
             Courses
-            <KeyboardArrowDownIcon className="transition-transform group-open:rotate-180" />
+            <KeyboardArrowDownIcon className="transition-transform group-open:rotate-180 motion-reduce:transition-none" />
           </>
         }
         summaryClassName="flex h-12 items-center justify-center gap-2 rounded-pill bg-secondary-400 px-6 type-label-l text-neutral-950 transition-colors hover:bg-secondary-300 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-hidden"

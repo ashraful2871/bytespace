@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { pageMetadata } from "@/app/shared-metadata";
 import BlueBand from "@/components/layout/BlueBand";
 import Footer from "@/components/layout/Footer";
 import FilterBar from "@/components/search/FilterBar";
@@ -18,7 +19,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/creators/[slug]">): Promise<Metadata> {
   const creator = getCreator((await params).slug);
-  return creator ? { title: creator.name, description: creator.tagline } : {};
+  return creator
+    ? pageMetadata({ title: creator.name, description: creator.tagline, path: `/creators/${creator.slug}` })
+    : {};
 }
 
 // Figma 60:1878 at 1440: band 0–592 (profile at 172, stats row at 464), filter bar at 654, a 6-card grid at 742
@@ -51,7 +54,6 @@ export default async function CreatorPage({ params, searchParams }: PageProps<"/
                     alt=""
                     width={96}
                     height={96}
-                    preload
                     className="size-24 shrink-0 rounded-float object-cover"
                   />
                   <div className="flex flex-col gap-2">

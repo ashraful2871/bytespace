@@ -58,7 +58,7 @@ export default function Hero() {
               type="search"
               name="q"
               placeholder="Course, topic, creator"
-              className="w-full min-w-0 bg-transparent type-body-l text-neutral-950 outline-none placeholder:text-neutral-500"
+              className="w-full min-w-0 bg-transparent type-body-l text-neutral-950 outline-hidden placeholder:text-neutral-500"
             />
           </label>
           <Button type="submit">Search</Button>
@@ -84,6 +84,7 @@ function HeroVisual() {
         aria-hidden
         width={1149}
         height={1149}
+        loading="lazy"
         className="absolute top-[70px] left-0 max-w-none"
       />
       <FloatShadow
@@ -92,7 +93,6 @@ function HeroVisual() {
         y={0}
         width={578}
         height={541}
-        preload
       />
       <Image
         src="/images/hero/student.webp"

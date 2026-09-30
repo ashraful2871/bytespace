@@ -5,6 +5,7 @@ import { ButtonLink } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
+  description: "The page you're looking for doesn't exist or has moved.",
 };
 
 // Figma 63:252. The "404" box is 920×480 at y=160, but its glyphs measure as Poppins 600 at 460px (882 wide, top at

@@ -228,12 +228,9 @@ async function copySvgs() {
   console.log("\nSVGs → public/images/svg (verbatim)");
   const svg = (p) => path.join(OUT, "svg", p);
 
-  for (const file of (await readdir(path.join(SRC, "backgrounds"))).filter((f) => f.endsWith(".svg")).sort()) {
-    await copySvg(path.join(SRC, "backgrounds", file), svg(file));
-  }
+  // The blueprint grids, glows and logo marks in the Figma kit are drawn in CSS (bg-blueprint, ui/Glow) or inline
+  // (Logo), so only the hero arc is copied.
   await copySvg(path.join(SRC, "hero/lime-arc.svg"), svg("lime-arc.svg"));
-  await copySvg(path.join(SRC, "logo/mark-light.svg"), svg("logo/mark-light.svg"));
-  await copySvg(path.join(SRC, "logo/mark-footer.svg"), svg("logo/mark-footer.svg"));
 
   await copySvg(path.join(MANUAL, "logo-light.svg"), svg("logo/logo-light.svg"));
   await copySvg(path.join(MANUAL, "logo-dark.svg"), svg("logo/logo-dark.svg"));

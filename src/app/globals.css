@@ -239,8 +239,11 @@
   font-weight: 500;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Anchor jumps (/#courses, #results) glide, unless the visitor asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* Lock the page behind an open modal <dialog> (MobileNav). */

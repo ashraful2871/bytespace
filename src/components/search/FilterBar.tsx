@@ -17,6 +17,10 @@ import {
 const trigger =
   "flex h-12 items-center gap-1 rounded-pill border border-neutral-200 bg-white px-3 type-label-m whitespace-nowrap text-neutral-950 transition-colors hover:bg-neutral-50 group-open:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-hidden sm:px-4";
 
+// A picked value replaces the trigger's label, so the label stays in the name (sr-only) and long values truncate on
+// phones; the triggers wrap rather than push the page sideways.
+const value = "max-w-28 truncate sm:max-w-none";
+
 const leftPanel = "max-sm:inset-x-0 sm:left-0";
 
 type FilterBarProps = {
@@ -38,7 +42,7 @@ export default function FilterBar({ query, pathname = "/courses" }: FilterBarPro
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-      <div className="relative flex gap-2 sm:gap-4">
+      <div className="relative flex min-w-0 flex-wrap gap-2 sm:gap-4">
         <Dropdown
           name="course-filters"
           className="max-sm:static"
@@ -70,7 +74,14 @@ export default function FilterBar({ query, pathname = "/courses" }: FilterBarPro
           summary={
             <>
               <SignalCellularAltIcon />
-              {level ?? "Level"}
+              {level ? (
+                <span className={value}>
+                  <span className="sr-only">Level: </span>
+                  {level}
+                </span>
+              ) : (
+                "Level"
+              )}
             </>
           }
           summaryClassName={trigger}
@@ -99,7 +110,14 @@ export default function FilterBar({ query, pathname = "/courses" }: FilterBarPro
           summary={
             <>
               <CategoryIcon />
-              {category?.label ?? "Category"}
+              {category ? (
+                <span className={value}>
+                  <span className="sr-only">Category: </span>
+                  {category.label}
+                </span>
+              ) : (
+                "Category"
+              )}
             </>
           }
           summaryClassName={trigger}
@@ -126,7 +144,10 @@ export default function FilterBar({ query, pathname = "/courses" }: FilterBarPro
         summary={
           <>
             <SortIcon />
-            {sort.label}
+            <span className={value}>
+              <span className="sr-only">Sort: </span>
+              {sort.label}
+            </span>
           </>
         }
         summaryClassName={trigger}

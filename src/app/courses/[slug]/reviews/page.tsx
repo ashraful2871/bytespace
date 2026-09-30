@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { StarIcon } from "@/components/icons";
 import Chip from "@/components/ui/Chip";
 import RatingStars from "@/components/ui/RatingStars";
 import { getCourse, type Course, type Review } from "@/data/courses";
+import { pageMetadata } from "@/app/shared-metadata";
 
 // Figma 60:1291: 723 wide, 24px between every heading, paragraph and block. The 16px copy sits on 26px lines.
 const heading = "type-heading-xs leading-[1.2] text-neutral-950";
@@ -15,6 +17,17 @@ const ratings = [5, 4, 3, 2, 1];
 function parseRating(value: string | string[] | undefined) {
   const n = Number(Array.isArray(value) ? value[0] : value);
   return ratings.includes(n) ? n : undefined;
+}
+
+export async function generateMetadata({ params }: PageProps<"/courses/[slug]/reviews">): Promise<Metadata> {
+  const course = getCourse((await params).slug);
+  return course
+    ? pageMetadata({
+        title: `Reviews: ${course.fullTitle}`,
+        description: course.subtitle,
+        path: `/courses/${course.slug}/reviews`,
+      })
+    : {};
 }
 
 export default async function CourseReviewsPage({ params, searchParams }: PageProps<"/courses/[slug]/reviews">) {

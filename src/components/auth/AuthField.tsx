@@ -17,7 +17,7 @@ export default function AuthField({ id, label, className = "", ...props }: AuthF
       </label>
       <input
         id={id}
-        className="h-[52px] w-full min-w-0 rounded-thumb border border-neutral-200 bg-white px-6 type-body-l text-neutral-950 transition-colors outline-none placeholder:text-neutral-500 hover:border-neutral-300 focus-visible:border-primary-800 focus-visible:ring-2 focus-visible:ring-primary-800/20"
+        className="h-[52px] w-full min-w-0 rounded-thumb border border-neutral-200 bg-white px-6 type-body-l text-neutral-950 transition-colors outline-hidden placeholder:text-neutral-500 hover:border-neutral-300 focus-visible:border-primary-800 focus-visible:ring-2 focus-visible:ring-primary-800/20"
         {...props}
       />
     </div>

@@ -10,12 +10,11 @@ type OrnamentProps = {
   y: number;
   /** Uses the baked `-flip` file; ornaments are never flipped with CSS. */
   mirrored?: boolean;
-  preload?: boolean;
   className?: string;
 };
 
 /** A tinted 3D shape from public/images/ornaments/, placed absolutely in Figma coordinates. */
-export default function Ornament({ shape, tint, size, x, y, mirrored = false, preload, className = "" }: OrnamentProps) {
+export default function Ornament({ shape, tint, size, x, y, mirrored = false, className = "" }: OrnamentProps) {
   return (
     <Image
       src={`/images/ornaments/${shape}-${tint}-${size}${mirrored ? "-flip" : ""}.webp`}
@@ -23,7 +22,6 @@ export default function Ornament({ shape, tint, size, x, y, mirrored = false, pr
       aria-hidden
       width={size}
       height={size}
-      preload={preload}
       className={`pointer-events-none absolute max-w-none select-none ${className}`}
       style={{ left: x, top: y, width: size, height: size }}
     />

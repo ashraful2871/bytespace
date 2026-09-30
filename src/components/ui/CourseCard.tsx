@@ -48,7 +48,7 @@ export default function CourseCard({ course, variant = "default", className = ""
       className={`isolate min-w-0 overflow-clip rounded-card border border-neutral-200 bg-white transition-colors ring-neutral-950 ring-offset-2 hover:border-neutral-300 has-[a:focus-visible]:ring-2 ${className}`}
     >
       <div className={`relative px-[15px] pt-[15px] ${v.body}`}>
-        <div className="@container relative aspect-[341/195] overflow-hidden rounded-thumb bg-[#443131]">
+        <div className="@container relative aspect-[341/195] overflow-hidden rounded-thumb bg-neutral-800">
           <Image
             src={course.image}
             alt=""

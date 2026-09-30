@@ -11,14 +11,13 @@ type FloatShadowProps = {
   y: number;
   width: number;
   height: number;
-  preload?: boolean;
 };
 
 /**
  * Figma Shadow A under a cut-out picture, as a pre-rendered image. Render it just before the picture, on the same
  * box. It replaces a chain of eight drop-shadow() filters, which Chrome re-blurs on every scroll frame.
  */
-export default function FloatShadow({ src, x, y, width, height, preload }: FloatShadowProps) {
+export default function FloatShadow({ src, x, y, width, height }: FloatShadowProps) {
   const w = width + PAD.left + PAD.right;
   const h = height + PAD.top + PAD.bottom;
 
@@ -30,7 +29,6 @@ export default function FloatShadow({ src, x, y, width, height, preload }: Float
       width={w}
       height={h}
       unoptimized
-      preload={preload}
       className="pointer-events-none absolute max-w-none select-none"
       style={{ left: x - PAD.left, top: y - PAD.top, width: w, height: h }}
     />

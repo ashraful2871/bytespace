@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/app/shared-metadata";
 import AuthField from "@/components/auth/AuthField";
 import AuthScreen, { AuthHeading, AuthSwitch } from "@/components/auth/AuthScreen";
 import { Button } from "@/components/ui/Button";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Create an Account",
-};
+  description: "Create a free ByteSpace account to learn from hundreds of courses or publish your own.",
+  path: "/signup",
+});
 
 export default function SignupPage() {
   return (

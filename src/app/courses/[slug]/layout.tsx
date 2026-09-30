@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { courses, getCourse } from "@/data/courses";
 import { getCreator } from "@/data/creators";
+import { pageMetadata } from "@/app/shared-metadata";
 
 // Every course is prerendered; any other slug is a 404.
 export const dynamicParams = false;
@@ -18,7 +19,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const course = getCourse((await params).slug);
-  return course ? { title: course.fullTitle, description: course.subtitle } : {};
+  return course
+    ? pageMetadata({ title: course.fullTitle, description: course.subtitle, path: `/courses/${course.slug}` })
+    : {};
 }
 
 // Left column width beside the sidebar (360 + 40 gap below xl, 412 + 48 from xl, capped at Figma's 720/725).

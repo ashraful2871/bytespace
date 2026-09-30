@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { VideocamIcon } from "@/components/icons";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { getCourse } from "@/data/courses";
+import { pageMetadata } from "@/app/shared-metadata";
 
 // Figma 60:624: 723 wide, one column with 24px between every heading, paragraph and block. The 16px copy sits on
 // 26px lines, as on the About tab.
@@ -10,6 +12,17 @@ const body = "type-body-m leading-[26px] text-neutral-700";
 
 // Figma's demo value; there are no learner accounts yet.
 const progress = 55;
+
+export async function generateMetadata({ params }: PageProps<"/courses/[slug]/lessons">): Promise<Metadata> {
+  const course = getCourse((await params).slug);
+  return course
+    ? pageMetadata({
+        title: `Lessons: ${course.fullTitle}`,
+        description: course.subtitle,
+        path: `/courses/${course.slug}/lessons`,
+      })
+    : {};
+}
 
 export default async function CourseLessonsPage({ params }: PageProps<"/courses/[slug]/lessons">) {
   const course = getCourse((await params).slug);

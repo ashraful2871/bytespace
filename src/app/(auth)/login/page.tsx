@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/app/shared-metadata";
 import AuthField from "@/components/auth/AuthField";
 import AuthScreen, { AuthHeading, AuthSwitch } from "@/components/auth/AuthScreen";
 import { FacebookIcon, GoogleIcon } from "@/components/icons";
 import { Button } from "@/components/ui/Button";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Sign In",
-};
+  description: "Sign in to ByteSpace to pick up your courses where you left off.",
+  path: "/login",
+});
 
 const providers = [
   { name: "Facebook", Icon: FacebookIcon },

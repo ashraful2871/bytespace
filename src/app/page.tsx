@@ -6,6 +6,9 @@ import Features from "@/components/sections/Features";
 import CreatorCta from "@/components/sections/CreatorCta";
 import Testimonials from "@/components/sections/Testimonials";
 import Footer from "@/components/layout/Footer";
+import { pageMetadata, siteDescription } from "@/app/shared-metadata";
+
+export const metadata = pageMetadata({ description: siteDescription, path: "/" });
 
 export default function Home() {
   return (

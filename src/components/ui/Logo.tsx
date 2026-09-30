@@ -41,7 +41,6 @@ export default function Logo({ variant = "light", href = "/", className = "", on
         alt=""
         width={171}
         height={37}
-        preload={variant === "light"}
       />
     );
 

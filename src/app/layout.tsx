@@ -37,7 +37,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${poppins.variable} ${satoshi.variable} h-full antialiased`}>
+    // data-scroll-behavior lets Next switch off the smooth scrolling from globals.css during page changes, so a new
+    // page opens at its top instead of gliding from the old scroll position and stopping partway down.
+    <html lang="en" data-scroll-behavior="smooth" className={`${poppins.variable} ${satoshi.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">{children}</body>
     </html>
   );

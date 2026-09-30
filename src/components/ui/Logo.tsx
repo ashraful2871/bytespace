@@ -29,7 +29,12 @@ function Mark({ className = "" }: { className?: string }) {
   );
 }
 
-export default function Logo({ variant = "light", href = "/", className = "", onClick }: LogoProps) {
+export default function Logo({
+  variant = "light",
+  href = "/",
+  className = "",
+  onClick,
+}: LogoProps) {
   // TODO(phase 00 manual export): swap the full-logo PNGs for the inline SVG with the outlined wordmark
   // (mark at 0,0, wordmark at +37,+7, 171×37 overall).
   const content =
@@ -37,7 +42,7 @@ export default function Logo({ variant = "light", href = "/", className = "", on
       <Mark />
     ) : (
       <Image
-        src={variant === "light" ? "/images/logo-light.png" : "/images/logo-dark.png"}
+        src={variant === "light" ? "/images/logo.png" : "/images/logo-dark.png"}
         alt=""
         width={171}
         height={37}
@@ -46,14 +51,23 @@ export default function Logo({ variant = "light", href = "/", className = "", on
 
   if (href === null) {
     return (
-      <span role="img" aria-label="ByteSpace" className={`inline-flex shrink-0 ${className}`}>
+      <span
+        role="img"
+        aria-label="ByteSpace"
+        className={`inline-flex shrink-0 ${className}`}
+      >
         {content}
       </span>
     );
   }
 
   return (
-    <Link href={href} onClick={onClick} aria-label="ByteSpace home" className={`inline-flex shrink-0 tap-target ${className}`}>
+    <Link
+      href={href}
+      onClick={onClick}
+      aria-label="ByteSpace home"
+      className={`inline-flex shrink-0 tap-target ${className}`}
+    >
       {content}
     </Link>
   );

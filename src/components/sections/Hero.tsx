@@ -28,7 +28,7 @@ const ornaments = [
 
 export default function Hero() {
   return (
-    <BlueBand height={1024} className="lg:min-h-(--band-h)">
+    <BlueBand height={1024} zoom className="lg:min-h-(--band-h)">
       <div aria-hidden className="design-stage z-20 hidden md:block">
         {ornaments.map((ornament) => (
           <Ornament key={`${ornament.shape}-${ornament.x}`} {...ornament} />

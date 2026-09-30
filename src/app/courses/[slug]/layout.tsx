@@ -6,6 +6,7 @@ import CourseTabs from "@/components/course/CourseTabs";
 import CourseVideo from "@/components/course/CourseVideo";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import ScrollToTop from "@/components/layout/ScrollToTop";
 import { courses, getCourse } from "@/data/courses";
 import { getCreator } from "@/data/creators";
 import { pageMetadata } from "@/app/shared-metadata";
@@ -43,6 +44,7 @@ export default async function CourseLayout({ children, params }: LayoutProps<"/c
       <main className="grid grid-cols-[minmax(var(--gutter),1fr)_minmax(0,1200px)_minmax(var(--gutter),1fr)] pb-16 lg:grid-rows-[auto_auto_auto_1fr]">
         <div aria-hidden className="col-span-full row-span-3 row-start-1 -mb-[62px] bg-blueprint" />
         <div className="col-span-full row-start-1">
+          <ScrollToTop />
           <Header />
         </div>
 

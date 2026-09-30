@@ -3,14 +3,24 @@ import Image from "next/image";
 import BlueBand from "@/components/layout/BlueBand";
 import SearchField from "@/components/search/SearchField";
 import { Button } from "@/components/ui/Button";
-import { HappyStudentsCard, ProgressCard, TopicCard } from "@/components/ui/FloatingCards";
+import {
+  HappyStudentsCard,
+  ProgressCard,
+  TopicCard,
+} from "@/components/ui/FloatingCards";
 import FloatShadow from "@/components/ui/FloatShadow";
 import Ornament from "@/components/ui/Ornament";
 
-// Positions are in the 1440px design frame; the ornaments are hidden on phones.
 const ornaments = [
   { shape: "spring-a", tint: "lime", size: 385, x: -122, y: 221 },
-  { shape: "spring-a", tint: "white", size: 175, x: 184, y: 477, mirrored: true },
+  {
+    shape: "spring-a",
+    tint: "white",
+    size: 175,
+    x: 184,
+    y: 477,
+    mirrored: true,
+  },
   { shape: "torus", tint: "white", size: 342, x: 14, y: 681 },
   { shape: "pyramid", tint: "white", size: 188, x: 1104, y: 464 },
   { shape: "cylinder", tint: "lime", size: 370, x: 1227, y: 221 },
@@ -32,7 +42,8 @@ export default function Hero() {
             Get Access to Hundreds Courses Available
           </h1>
           <p className="type-body-m text-neutral-100 md:type-body-l lg:whitespace-nowrap">
-            Unlock your creativity, gain valuable knowledge, and grow your business with our wide range of courses.
+            Unlock your creativity, gain valuable knowledge, and grow your
+            business with our wide range of courses.
           </p>
         </div>
 
@@ -41,7 +52,10 @@ export default function Hero() {
           role="search"
           className="flex w-full max-w-[581px] flex-col gap-4 sm:flex-row sm:items-start"
         >
-          <SearchField placeholder="Course, topic, creator" className="sm:flex-1" />
+          <SearchField
+            placeholder="Course, topic, creator"
+            className="sm:flex-1"
+          />
           <Button type="submit">Search</Button>
         </Form>
       </div>
@@ -51,15 +65,13 @@ export default function Hero() {
   );
 }
 
-// The student photo with the floating cards. Purely decorative, so it's hidden from screen readers.
 function HeroVisual() {
   return (
     <div
       aria-hidden
       className="relative mx-auto mt-6 h-[512px] w-[1150px] [zoom:0.31] sm:[zoom:0.54] md:[zoom:0.64] lg:absolute lg:top-[512px] lg:left-[calc(50%-575px)] lg:mt-0 lg:[zoom:1]"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- an SVG gains nothing from the image optimizer */}
-      <img
+      <Image
         src="/images/svg/lime-arc.svg"
         alt=""
         width={1149}
@@ -67,7 +79,13 @@ function HeroVisual() {
         loading="lazy"
         className="absolute top-[70px] left-0 max-w-none"
       />
-      <FloatShadow src="/images/hero/student-shadow.webp" x={286} y={0} width={578} height={541} />
+      <FloatShadow
+        src="/images/hero/student-shadow.webp"
+        x={286}
+        y={0}
+        width={578}
+        height={541}
+      />
       <Image
         src="/images/hero/student.webp"
         alt=""

@@ -101,7 +101,6 @@ export default function Features() {
   );
 }
 
-// Decorative, so it's hidden from screen readers; `inert` also keeps its course card link out of the tab order.
 function PathVisual() {
   return (
     <div

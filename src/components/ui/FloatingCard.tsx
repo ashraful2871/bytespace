@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 
 type FloatingCardProps = {
-  /** white: default card · blue: primary-800 card with light text. */
-  tone?: "white" | "blue";
+  /** white: default card · blue: primary-800 card with light text · lime: the auth collage's Happy Students card. */
+  tone?: "white" | "blue" | "lime";
   className?: string;
   style?: CSSProperties;
   children: ReactNode;
@@ -11,6 +11,7 @@ type FloatingCardProps = {
 const tones = {
   white: "bg-white text-neutral-950",
   blue: "bg-primary-800 text-neutral-50",
+  lime: "bg-secondary-400 text-neutral-950",
 };
 
 /**

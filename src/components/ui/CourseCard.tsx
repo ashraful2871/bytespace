@@ -18,14 +18,20 @@ const variants = {
     byline: "type-body-xs",
     level: "type-label-xs leading-[1.2]",
     rating: "type-body-l",
+    star: "text-neutral-200",
     bubble: "lime",
+    body: "pb-5",
   },
   relaxed: {
     title: "",
     byline: "type-body-xs leading-5",
     level: "type-label-xs",
     rating: "type-label-l leading-7",
+    // Lime on the auth collage (49:282); the Features copy's star is hidden under the student photo.
+    star: "text-secondary-400",
     bubble: "dark",
+    // Figma 49:41: a 136px body (price row 24) and 16px below it, so the card is 384 like the default one.
+    body: "pb-[15px]",
   },
 } as const;
 
@@ -41,7 +47,7 @@ export default function CourseCard({ course, variant = "default", className = ""
     <article
       className={`isolate min-w-0 overflow-clip rounded-card border border-neutral-200 bg-white transition-colors ring-neutral-950 ring-offset-2 hover:border-neutral-300 has-[a:focus-visible]:ring-2 ${className}`}
     >
-      <div className="relative px-[15px] pt-[15px] pb-5">
+      <div className={`relative px-[15px] pt-[15px] ${v.body}`}>
         <div className="@container relative aspect-[341/195] overflow-hidden rounded-thumb bg-[#443131]">
           <Image
             src={course.image}
@@ -81,7 +87,7 @@ export default function CourseCard({ course, variant = "default", className = ""
             </div>
             <p className={`mr-px flex shrink-0 items-center text-body ${v.rating}`}>
               {course.rating}
-              <StarRateIcon size={24} className="text-neutral-200" />
+              <StarRateIcon size={24} className={v.star} />
               <span className="sr-only">out of 5</span>
             </p>
           </div>
@@ -102,7 +108,7 @@ export default function CourseCard({ course, variant = "default", className = ""
           </div>
 
           {variant === "relaxed" ? (
-            <p className="flex items-end font-poppins text-xl leading-7 text-primary-800">
+            <p className="flex items-end font-poppins text-xl leading-6 text-primary-800">
               <span className="font-medium">$</span>
               <span className="font-semibold">{course.price}</span>
               <span className="type-body-xs text-body">/lifetime</span>

@@ -21,29 +21,29 @@
 | 10  | Course detail shell and About         | `/phase-10-course-about`     | 🟨     | 2026-09-30 | Done (tsc, lint, build; every block lands on its Figma y except the D3 tabs; no overflow at 375/768/1024/1280; tabs keep the layout mounted); awaiting user review. 2.92 with D3, 1.51 at Figma's tab offset (scaled preview). Images are preview stand-ins |
 | 11  | Lessons and Reviews tabs              | `/phase-11-course-tabs`      | 🟨     | 2026-09-30 | Done (tsc, lint, build; every block lands on its tree y, 1px up from the Phase 10 band edge; no overflow at 375/768/1024/1280; `?rating=n` filters server-side); awaiting user review. Lessons 1.71, Reviews 1.75 (scaled previews) |
 | 12  | Creator profile                       | `/phase-12-creator`          | 🟨     | 2026-09-30 | Done (tsc, lint, build; every block lands on its tree y, page 2136 tall, footer at 1611; no overflow at 375/768/1024; the filter bar filters the creator's courses); awaiting user review. 1.46 (scaled preview). Avatar is a preview stand-in |
-| 13  | Auth: Login and Register              | `/phase-13-auth`             | ⬜     |            |                                                                                                                                 |
+| 13  | Auth: Login and Register              | `/phase-13-auth`             | 🟨     | 2026-09-30 | Done (tsc, lint, build; card, copy and collage land on their Figma boxes at 1440; no overflow 375–1920; keyboard and labels checked over CDP); awaiting user review. Login 1.10, Register 1.17 (scaled previews). Social icons are CC0 stand-ins |
 | 14  | Final QA and hardening                | `/phase-14-final-qa`         | ⬜     |            |                                                                                                                                 |
 
 ## Visual diff scores (mean % difference at 1440; target ≤ 2%)
 
 | Page / section        | Baseline | Latest | Status |
 | --------------------- | -------- | ------ | ------ |
-| home/hero             | 1.35     | 1.02   | ≤2     |
+| home/hero             | 1.35     | 0.94   | ≤2     |
 | home/brands+courses   | 1.09     | 0.96   | ≤2     |
 | home/grid+paths       | 1.59     | 1.17   | ≤2     |
-| home/features         | 2.46     | 1.46   | ≤2     |
-| home/cta+testimonials | 2.73     | 1.08   | ≤2     |
-| home/footer           | 0.49     | 0.52   | ≤2     |
+| home/features         | 2.46     | 1.05   | ≤2     |
+| home/cta+testimonials | 2.73     | 1.06   | ≤2     |
+| home/footer           | 0.49     | 0.40   | ≤2     |
 | search                |          | 2.12\* | ≈2     |
 | course/about          |          | 2.92\* | ≤2 ex-D3 (1.51) |
 | course/lessons        |          | 1.71* | ≤2     |
 | course/reviews        |          | 1.75* | ≤2     |
 | creator               |          | 1.46\* | ≤2     |
-| login                 |          |        |        |
-| signup                |          |        |        |
+| login                 |          | 1.10\* | ≤2     |
+| signup                |          | 1.17\* | ≤2     |
 | 404                   |          | 1.49\* | ≤2     |
 
-\* Scored against the 598px previews scaled to 1440 (`--ref`): `screens/not-found.png` ×1.237 and `screens/search.png` ×2.408 (the blur of a 2.4× upscale costs most of search's 2.12; its geometry matches the tree to the pixel). course/about uses the 848px `screens/course-details.png` ×1.698: 2.92 as built, where the D3 tab shift doubles everything below y=1020, and 1.51 with the tabs temporarily at Figma's 63px offset (the DoD's "excluding D3" score). course/lessons and course/reviews use `screens/course-lessons.png` (800px, ×1.8) and `screens/course-reviews.png` (669px, ×2.152), both with D3 already in Figma. creator uses the 1079px `screens/creator-profile.png` ×1.335 (run `--url` and `--ref` from PowerShell: Git Bash rewrites `/creators/...` into a Windows path). The `screens/1440/*` exports don't exist yet. Re-score once they do.
+\* Scored against the 598px previews scaled to 1440 (`--ref`): `screens/not-found.png` ×1.237 and `screens/search.png` ×2.408 (the blur of a 2.4× upscale costs most of search's 2.12; its geometry matches the tree to the pixel). course/about uses the 848px `screens/course-details.png` ×1.698: 2.92 as built, where the D3 tab shift doubles everything below y=1020, and 1.51 with the tabs temporarily at Figma's 63px offset (the DoD's "excluding D3" score). course/lessons and course/reviews use `screens/course-lessons.png` (800px, ×1.8) and `screens/course-reviews.png` (669px, ×2.152), both with D3 already in Figma. login and signup use the 1200px `screens/login.png` and `screens/register.png` ×1.2 (`npm run diff login --ref .claude/figma/screens/login.png`, and `register` likewise). The home rows were re-run on 2026-09-30 after the relaxed CourseCard fix (mean 0.93). creator uses the 1079px `screens/creator-profile.png` ×1.335 (run `--url` and `--ref` from PowerShell: Git Bash rewrites `/creators/...` into a Windows path). The `screens/1440/*` exports don't exist yet. Re-score once they do.
 
 ## Decisions (from design_plan.md §9; record changes here)
 
@@ -57,6 +57,11 @@
 - course/about (D3): the tab row sits 78px below the band (y=1035), not Figma's 63 (y=1020), to match Lessons and Reviews. Everything below moves 15px down, so the footer is at 2207 and the page is 2732 tall. Diff 1.51 → 2.92 against the scaled preview. Approved as D3.
 
 ## Blockers and open questions
+- Phase 13 deviations, need approval: (1) the placeholders and the divider's "or" use `neutral-500`, following the approved hero search deviation (Figma `neutral-400`, 3.65:1). (2) Login's "New user?" is `neutral-700` as the spec says, like Register's prompt; Figma draws Login's lighter (#888 on the preview, Register's is dark). (3) The back collage card reads "Intermediate" (course 2's level since the Phase 08 decision); Figma's reads Beginner.
+- Phase 13 spec corrections (measured on the previews): (1) the auth "spring?" is **spring-a mirrored** (cap top-left, coils running down-right), the file the hero uses (`spring-a-white-175-flip`). Its frame x (645) is its right edge, so it sits at (471,626); the README's ornament map now says so. Torus and pyramid match their guessed renders. (2) The relaxed CourseCard is 384 tall (price row on a 24px line, 16 below it); it rendered 393, the Features copy too (features 1.06 → 1.05). (3) The relaxed card's star is lime (Home's grid star stays `neutral-200`). (4) The lime Happy Students card has a `primary-800` star and the dark 2K+ bubble (`HappyStudentsCard tone="lime"`, `FloatingCard tone="lime"`). (5) The divider lines stop 13px short of the right edge, so "or" sits at x=211. (6) The social glyphs are about 34px inside Figma's 40px frames, in pure black.
+- Phase 13 notes: `components/auth/AuthScreen` holds the copy, the collage and the card (plus `AuthHeading`, an hgroup with the page's only h1, and `AuthSwitch`). `AuthField` is the label and input. The collage is a 723×585 stage with its origin at Figma (97,305), aria-hidden and inert, and it zooms with `min(1, 100cqw/621px)`: 1 from 1440 up, 0.92 at 1280, 0.49 at 1024. The copy block is at least 127 tall (Register's), so the collage starts at y=305 on both pages. Below lg the collage is hidden and the copy and card stack in a 579 column; the card pads 24/40 on phones and 63/61 from sm. The forms are native (`action="#"`, `method="post"` so a stray submit never puts a password in the URL; TODO comments). Social buttons are static `<button>`s with aria-labels. `minLength` only applies to typed input (browser behaviour).
+- ⛔ Phase 13 stand-ins: `FacebookIcon` and `GoogleIcon` are the CC0 Simple Icons glyphs from `scripts/icon-fallbacks/` (the icon script now takes a stand-in SVG as a fallback). `npm run icons` swaps in `manual/icon-{facebook,google}.svg` (in brand colour, mono=false) once they're exported. Check the 34px size against the real exports.
+- Tooling: `npm run icons` rewrites every icon with LF endings, so git lists them as modified with no content change (autocrlf). `git checkout` doesn't clear it; the commit will only carry `index.ts` plus the two new icons.
 - Phase 12 open (copywriter): the creator bio is kept verbatim from Figma (60:2185): it says "Welcome to the creative world of [Creator's Name]" (an unfilled placeholder) and the second paragraph starts "ive into" (a lowercase "Dive" missing its D). Supply the final bio for PurePearl Studio.
 - Phase 12 open (owner): the stats pill says "3 Products" (Figma), but the grid under it shows 6 courses by this creator. Should the count come from the course list, or are "products" something other than courses?
 - Phase 12 notes: the FilterBar takes a `pathname` (default `/courses`), and `coursesHref` takes it as a third argument, so on the profile the menus link to `/creators/<slug>?level=…` and filter only that creator's courses (`listCourses({ creator })`, not a URL parameter; it counts as a filter, so the list isn't repeated to fill pages). This makes `/creators/[slug]` dynamic (ƒ); unknown slugs still 404. There's no pagination, and an empty filter (`?level=advanced`) shows "No courses found" with Clear filters. Follow is a static `<button>` until there are accounts. The avatar is `alt=""` (the h1 beside it names the creator). Below 640 the avatar stacks over the name, the badge wraps under the name, and the tagline and bio drop to `type-body-m`.
@@ -67,7 +72,7 @@
 - Phase 11 deviations, need approval: (1) review card 1 uses 26px lines like cards 2–4 (Figma gives its role and quote 24px lines, so it's 276 tall, not 282); cards 2–4 and the footer sit 6px lower. (2) The breakdown bars are count ÷ total (81, 13.5, 2.4, 1.3, 1.8%); Figma's fills are hand-drawn (about 92, 37, 9, 3, 5%). (3) The footer sits 64px below the tab content on all three tabs (About's gap); Figma has 83 on Lessons (2358) and 91 on Reviews (2924), so ours are at 2338 and 2902. (4) The tab column is 725 wide on every tab (About's width, set by the shared layout); Lessons and Reviews are 723 in Figma, so their cards are 2px wider. (5) Reviewer role and "a year ago" use `neutral-400` as in Figma and the sidebar (3.65:1, below AA); switch to `neutral-500` like the approved intro copy?
 - Phase 11 spec corrections (sampled on the previews): (1) the stars on the breakdown rows, review cards and filter chips are `neutral-700` (#4b4c53), not `neutral-950`. (2) The star filter chips are the inactive chip fill (`neutral-50`), not outline pills. (3) The bar and progress tracks are `neutral-100` (#e5e6e8), so `ProgressBar` gained `track="muted"`. (4) The copy sits on 26px lines as on About (intro 52/78, module description 52, quote 78). The name is `type-label-l` on 22px, "Learning Progress" and "Ratings" `type-label-s` on 17px, module titles `type-label-m` on 19px. (5) Figma's header row puts the stars inside the reviewer column (avatar row, 24, stars); the card is avatar row → stars → quote, 24 apart.
 - Phase 11 notes: `Chip` has `size="lg"` (48 tall, 4px gap) for the star filters, and `chipStyles.sizes` holds the heights. `RatingStars` takes a `gap` (default 4, Figma's) and `tone="dark"`, and its partial fill skips the gaps. The Reviews route is now dynamic (ƒ) because it reads `?rating`. The summary card stacks below a 576px column (container query; 1024 stacks, 1280 doesn't) and its stars drop to 16px under 384. The filter chips scroll sideways (full-bleed while the layout stacks). "Learning Progress" 55% is a constant in the Lessons page until there are learner accounts. Empty filters (`?rating=4`: every seed review is 5-star) show "No 4-star reviews yet."
-- ⛔ Phase 11 stand-ins: `public/images/avatars/reviewer-1..4.webp` are cut from the 669px Reviews preview (2.15× upscale, soft). `npm run assets` overwrites them once the manual export lands. The `Placeholder` component is still used by login and signup.
+- ⛔ Phase 11 stand-ins: `public/images/avatars/reviewer-1..4.webp` are cut from the 669px Reviews preview (2.15× upscale, soft). `npm run assets` overwrites them once the manual export lands.
 - Tooling: `node_modules` was installed with bun (untracked `bun.lockb`, `.exe`/`.bunx` shims), so `npx tsc` fetches the wrong package. Run `node node_modules/typescript/bin/tsc --noEmit` (or `npm run build`) until it's reinstalled with npm.
 - Phase 09 deviations, need approval: (1) pagination is centred (564–876) as the spec says, but Figma's box sits at x=588, 25px right of centre. (2) At page 1, Prev (and Next on the last page) is a grey (`neutral-300`), non-link arrow; Figma draws Prev dark on page 1. (3) The search placeholder uses `neutral-500`, following the approved hero deviation (Figma `neutral-400`). (4) The current page number follows Figma in `neutral-300` (#abaeb5, about 2.2:1 on white, below AA). It's announced as `aria-current="page"`, but confirm that the owner wants the grey number and not a highlighted one.
 - Phase 09 spec correction: the page numbers are `type-heading-xs` (Poppins 600 20/28; Figma boxes are 28 tall, and "2" is 12 wide), not `type-body-l`. The filter buttons use a 4px icon–label gap (Figma 55:170: icon at 16, label at 44), not the Button's 8, so they're written out in `FilterBar`, not `buttonClasses`.
@@ -83,7 +88,7 @@
 - Phase 08 open, resolved 2026-09-30 (user): course 2 moves to **4.8 and Intermediate** everywhere (the detail header's values), so Home card 2 changed (grid+paths 1.10 → 1.17, home mean 0.95). The Reviews tab still says 4.7 (`ratingSummary.average`).
 - Phase 08 copy kept verbatim from Figma, flagged for the owner: the creator bio has "[Creator's Name]" and "ive into" (missing D), the modules skip Module 3, the first review is wrapped in straight quotes, and the tab reads "Lesson" on one screen and "Lessons" on another (the site uses "Lessons").
 - Phase 08 data notes: `?category=` accepts a chip slug, a learning-path slug (mapped to chip slugs in `pathCategories`) or `featured` (everything). With no filter, `listCourses` repeats the 6 seeds 15× to fill Figma's 5 pages of 18. Filters return unique matches. `metadataBase` reads `NEXT_PUBLIC_SITE_URL` (falls back to localhost:3000), so set it on deploy. The creator, reviewer and sneak-peek image paths point at `npm run assets` outputs that wait on the manual export.
-- Phase 08 skeletons: `ui/Placeholder` marks unbuilt bodies. Delete it once Phases 09–13 replace every use. The course layout owns the band and the tab nav (`NavLink`, `aria-current`), and each tab page is only its tab body. `(auth)/layout` owns the full-screen band (auth header, no footer).
+- Phase 08 skeletons: `ui/Placeholder` marked unbuilt bodies (deleted in Phase 13, once nothing used it). The course layout owns the band and the tab nav (`NavLink`, `aria-current`), and each tab page is only its tab body. `(auth)/layout` owns the full-screen band (auth header, no footer).
 - Phase 08 tip: stopping a background `npx next start` can leave the `next` child listening. It then serves the old build's HTML against new chunks (a 37.9% diff). Free the port (`netstat -ano`, then Stop-Process) before restarting.
 - Phase 06 deviation, needs approval: Figma gives card 1's name ("Sarah M.") a 24px box, while cards 2–3 use 28px, so card 1 is 432 tall instead of 436. The site uses `type-heading-xs` (28) on all three, so card 1 is 436 and its role and quote sit 4px lower than in Home.png. Approve this, or ask for the Figma quirk to be matched.
 - Phase 06 ornament positions were fitted on Home.png with a ±5px search over a synthetic blueprint. They are 1px off the image-rect offsets: spring-a (-121,-161), the mirrored spring (179,5; frame x 353 is its right edge), cone (-49,225), torus (17,299), pyramid (1078,0), spring-b (1108,289), cylinder (1222,6).
@@ -105,7 +110,7 @@
 
 - Figma MCP call limit reached on the Starter plan (2026-09-28). Phases must work from pre-captured specs and manual exports.
 - ⛔ Manual Figma export not done yet (`.claude/figma/assets/manual/` and `.claude/figma/screens/1440/` are missing). Missing: the 1440 refs for every non-home page (`npm run diff <page>` exits until they exist) · logo-light/dark.svg · brand-1..5.svg · icon-design/facebook/google.svg · thumb-2..6 · video-thumb · sneak-1..4 · creator-purepearl/creator-sm · reviewer-1..4 · auth-\*. `npm run assets` picks them up once they are saved.
-- ⛔ Auth ornaments are unconfirmed: `torus-lime-146` was built from the guessed render (the pyramid-lime-188 guess reuses the CTA file), and the auth "spring?" 175 white was skipped (it's unclear whether it's spring-a or spring-b). Confirm with `auth-*` in Phase 13.
+- Auth ornaments, matched on the previews in Phase 13: the spring is spring-a mirrored (the hero file), and the torus-lime-146 and pyramid-lime-188 renders line up. The manual `auth-*` export would only sharpen them.
 - Phase 03 ornament positions are measured on Home.png, not the README frame values: each Figma image rect sits 2–4px left of its frame, so the positions are spring-a lime (-122,221), torus (14,681), pyramid (1104,464), cylinder (1227,221) and spring-b (1124,672). The mirrored spring's frame x (358) is its right edge after the flip, so it sits at (184,477). Apply the same offsets to the CTA ornaments in Phase 06.
 - Phase 03 spec corrections from Home.png: the Happy Students star is lime (`secondary-400`), not `primary-800`, and "55%" matches Poppins 500 better than 600 (4px wider at 600).
 - Home.png draws one blueprint grid line at y=604 (left side) where the 120px grid puts it at 598. This is a Figma grid irregularity, and the site keeps the regular grid.
@@ -113,11 +118,36 @@
 - S12 verified 2026-09-28: `/` at 375px (headless Edge CDP mobile emulation) has scrollWidth 375 and no horizontal scroll. Two full-bleed `left-1/2` glow layers (right edge 908) and one `img.max-w-none` extend past the viewport but are clipped by their ancestors.
 - Phase 01 icon picks (`npm run icons`; the list is in `scripts/build-icons.mjs`). Matched to `public/images/categories/*.png`: Business → `domain` (not business_center), Marketing → `connect_without_contact` (not campaign), Photography → `photo_camera_front` (not photo_camera), IT → `computer`. Material Symbols has no `developer_mode`, so `DeveloperModeIcon` uses the Figma export. Figma's rating and 16px stars are solid and round-cornered, so both use `rounded/*-fill`.
 - Unconfirmed icon guesses (outlined Symbols; check against the full-res screens): filter_alt, category, sort, chevron_left/right, keyboard_arrow_down, share, play_arrow (filled), group, menu, close. Phase 10 matched topic, videocam, badge and connect_without_contact on the course preview.
-- ⛔ Waiting on the manual export: `DesignIcon` falls back to `design_services` until `icon-design.svg` lands, `FacebookIcon`/`GoogleIcon` aren't generated yet, and `Logo` light/dark still use the PNGs (only `mark` is inline SVG). Re-run `npm run icons` and swap the Logo wordmark once they exist.
+- ⛔ Waiting on the manual export: `DesignIcon` falls back to `design_services` until `icon-design.svg` lands, `FacebookIcon`/`GoogleIcon` use the Phase 13 stand-ins, and `Logo` light/dark still use the PNGs (only `mark` is inline SVG). Re-run `npm run icons` and swap the Logo wordmark once they exist.
 - Phase 01 spec fix: `bg-blueprint` uses `calc(50% - 660px)`, not `50% - 720px`. A background-position percentage is relative to (width − 120px tile), so −660 puts the lines at frame x=0 mod 120 (checked at 1440 → 0 and 1920 → 240).
 - `.gitignore` ends with a blanket `.claude` (a user change), which also ignores the commands, agents, hooks and figma kit. Confirm this is intended.
 
 ## Commit messages (suggested, one per phase; newest first)
+
+Phase 13 (not committed yet):
+
+```
+feat(auth): build the Login and Register pages
+
+- AuthScreen: the tagline and intro, a collage (two relaxed course
+  cards, a lime Happy Students card, a lime torus and pyramid and the
+  mirrored white spring) and the 579x784 form card. The collage is
+  hidden and inert, keeps its 1440 size down to a 621px column and zooms
+  below that; it is hidden below lg, where the card centres under the
+  copy.
+- Forms: native validation only (required, email and password types,
+  autocomplete, minLength 8 on sign-up), labelled AuthFields, POST to
+  "#" until there is a backend. Login adds the "or" divider and static
+  Facebook and Google buttons.
+- No scrolling from md: a fit-height utility scales the whole screen
+  to the window height (zoom 1 at 1440x1024 and taller).
+- UI: the relaxed CourseCard is 384 tall with a lime star, and
+  FloatingCard and HappyStudentsCard gain a lime tone. Remove the
+  Placeholder component.
+- Icons: build-icons takes a stand-in SVG fallback; Facebook and Google
+  use CC0 Simple Icons glyphs until the manual export.
+- 1.10% (Login) and 1.17% (Register) against the scaled previews.
+```
 
 Phase 12 (not committed yet):
 
@@ -252,6 +282,10 @@ feat(home): responsive QA pass and sign-off
 ```
 
 ## Session log (newest first, one line each)
+
+- 2026-09-30: Phase 13 follow-up (user request: no scrolling on login/register). New `fit-height` utility (globals.css): zoom = min(1, 100dvh / --fit-h), min-height fills the viewport. The auth band uses it from md with --fit-h 944 (lg: card ends at 904 + 40) and 1082 (stacked: 120 + 98 + 40 + 784 + 40); the card is 784 with Figma's gaps from md, and the BlueBand 1024 min-height is gone. Over CDP, scroll size equals the window at 1920×945, 1440×1024, 1440×800, 1536×730, 1366×657 (zoom 0.70), 1280×720, 1024×700, 768×960 and 820×1100. 1440×1024 is unchanged (zoom 1; diffs 1.10/1.17). Phones (<768) keep their natural height and scroll.
+
+- 2026-09-30: Phase 13 → 🟨. `/login` and `/signup` built on `components/auth/{AuthScreen,AuthField}`. At 1440 over CDP: card (741,120) 579×784, h1 at (804,210), copy (122,120), collage stage (97,305) with the cards at (122,394) and (233,305), 384 tall. 1280 zoom 0.92, 1024 zoom 0.49 (collage clears the copy by 28), 768 and 375 stack in a 579 column; no overflow 375–1920. Tab order: logo, fields, submit, (social), switch link; the collage links are inert. Diffs: Login 1.56 → 1.10 and Register 1.58 → 1.17 after the spring (spring-a mirrored, not spring-b), the 384 card, the divider inset and the 34px icons. Home re-run: mean 0.93 (features 1.05).
 
 - 2026-09-30: Phase 11 → 🟨. Lessons and Reviews tab bodies. At 1440 over CDP: Lessons headings 1118/1242/1884/2034, module rows 99 apart from 1290 (tiles at +2), progress card (120,2158) 725×116, footer 2338. Reviews: summary (120,1268) 725×226 with the lime box at (160,1311) and rows at (313,1308) (bar 282, stars at 611, count at 763), chips at 1566, cards at 1638/1944/2250/2556 (282 each), footer 2902. 375/768/1024/1280 have no overflow. Diffs 1.71/1.75 against the scaled previews.
 - 2026-09-30: Phase 10 → 🟨. The course shell and About are built: `components/course/{CourseHeader,CourseVideo,CourseSidebar,CourseTabs}`, with the grid layout and the About page. At 1440 over CDP: title (122,172), badges at 317, Share 1284–1405, video (125,416) 720×479, band 957, sidebar (908,416) 412×959 with sections at 456/704/912/1124 (avatar 1148), tabs 1035 (D3), About headings 1118/1606/1803, footer 2207. 1280: sidebar 412, video 692. 1024: sidebar 360, band 825. 768 and 375 stack with no overflow, and the video is 16:10 on phones. Tab clicks keep the same `<aside>` node and move `aria-current`. The About route no longer uses `Placeholder`. Course 2 is now 4.8/Intermediate (user decision).

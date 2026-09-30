@@ -98,6 +98,15 @@
   zoom: tan(atan2(100cqw, 1440px));
 }
 
+/* Scales a screen down as one piece so it fits the viewport height without scrolling (Login and Register).
+   Set --fit-h to the screen's height at zoom 1. The zoom is min(1, 100dvh / --fit-h), and the min-height fills
+   the viewport at any zoom. Width needs nothing: an auto-width block lays out in the wider space it gains. */
+@utility fit-height {
+  --fit: min(1, tan(atan2(100dvh, var(--fit-h))));
+  zoom: var(--fit);
+  min-height: calc(100dvh / var(--fit));
+}
+
 /* The 120px blueprint grid behind the blue bands (lines are white at 12%), locked to the 1440 frame at
    any width. A percentage position is relative to (width - 120px), so the frame's left edge
    (50% of the width - 720px) is written as 50% - 660px. */

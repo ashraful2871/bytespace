@@ -43,29 +43,42 @@ export function ProgressCard({
   );
 }
 
-// Figma 1:1821: 258×121 (123 in Features); seven 43px avatars on a 27px step plus the "2K+" bubble.
-export function HappyStudentsCard({ variant = "default", className = "" }: PositionProps & VariantProps) {
+// Figma 1:1821: 258×121 (123 in Features); seven 43px avatars on a 27px step plus the "2K+" bubble. The auth
+// collage's copy (49:313) is lime, with a blue star and a dark bubble.
+export function HappyStudentsCard({
+  variant = "default",
+  tone = "white",
+  className = "",
+}: PositionProps & VariantProps & { tone?: "white" | "lime" }) {
   const relaxed = variant === "relaxed";
+  const lime = tone === "lime";
+  const star = lime ? "text-primary-800" : "text-secondary-400";
 
   return (
-    <FloatingCard className={`w-[258px] ${className}`}>
+    <FloatingCard tone={tone} className={`w-[258px] ${className}`}>
       <div>
         <p className={`type-label-m ${relaxed ? "leading-6" : ""}`}>Happy Students</p>
         {relaxed ? (
           <p className="flex items-center text-[10px]/[1.5]">
             <span className="font-bold">4.5</span>&nbsp;<span className="text-neutral-400">(240)</span>
-            <StarIcon size={16} className="text-secondary-400" />
+            <StarIcon size={16} className={star} />
             <span className="sr-only">average rating from 240 reviews</span>
           </p>
         ) : (
           <p className="flex items-center type-body-xs">
             4.5&nbsp;<span className="text-neutral-400">(240)</span>
-            <StarIcon size={16} className="text-secondary-400" />
+            <StarIcon size={16} className={star} />
             <span className="sr-only">average rating from 240 reviews</span>
           </p>
         )}
       </div>
-      <AvatarStack avatars={happyStudentAvatars} more="2K+" size={43} step={27} />
+      <AvatarStack
+        avatars={happyStudentAvatars}
+        more="2K+"
+        size={43}
+        step={27}
+        bubble={lime ? "dark" : "lime"}
+      />
     </FloatingCard>
   );
 }

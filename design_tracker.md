@@ -19,8 +19,8 @@
 | 08  | Data model, routing and 404           | `/phase-08-routes`           | 🟨     | 2026-09-29 | Done (tsc, lint, build: 18 course + 1 creator routes SSG; unknown slugs 404; no overflow at 375); awaiting user review. 404 1.49 vs the scaled preview |
 | 09  | Search page `/courses`                | `/phase-09-search`           | 🟨     | 2026-09-29 | Done (tsc, lint, build; every block lands on its Figma y, page 3853 tall; no overflow at 375/768/1024 with any menu open); awaiting user review. 2.12 vs the scaled preview |
 | 10  | Course detail shell and About         | `/phase-10-course-about`     | 🟨     | 2026-09-30 | Done (tsc, lint, build; every block lands on its Figma y except the D3 tabs; no overflow at 375/768/1024/1280; tabs keep the layout mounted); awaiting user review. 2.92 with D3, 1.51 at Figma's tab offset (scaled preview). Images are preview stand-ins |
-| 11  | Lessons and Reviews tabs              | `/phase-11-course-tabs`      | ⬜     |            |                                                                                                                                 |
-| 12  | Creator profile                       | `/phase-12-creator`          | ⬜     |            |                                                                                                                                 |
+| 11  | Lessons and Reviews tabs              | `/phase-11-course-tabs`      | 🟨     | 2026-09-30 | Done (tsc, lint, build; every block lands on its tree y, 1px up from the Phase 10 band edge; no overflow at 375/768/1024/1280; `?rating=n` filters server-side); awaiting user review. Lessons 1.71, Reviews 1.75 (scaled previews) |
+| 12  | Creator profile                       | `/phase-12-creator`          | 🟨     | 2026-09-30 | Done (tsc, lint, build; every block lands on its tree y, page 2136 tall, footer at 1611; no overflow at 375/768/1024; the filter bar filters the creator's courses); awaiting user review. 1.46 (scaled preview). Avatar is a preview stand-in |
 | 13  | Auth: Login and Register              | `/phase-13-auth`             | ⬜     |            |                                                                                                                                 |
 | 14  | Final QA and hardening                | `/phase-14-final-qa`         | ⬜     |            |                                                                                                                                 |
 
@@ -36,14 +36,14 @@
 | home/footer           | 0.49     | 0.52   | ≤2     |
 | search                |          | 2.12\* | ≈2     |
 | course/about          |          | 2.92\* | ≤2 ex-D3 (1.51) |
-| course/lessons        |          |        |        |
-| course/reviews        |          |        |        |
-| creator               |          |        |        |
+| course/lessons        |          | 1.71* | ≤2     |
+| course/reviews        |          | 1.75* | ≤2     |
+| creator               |          | 1.46\* | ≤2     |
 | login                 |          |        |        |
 | signup                |          |        |        |
 | 404                   |          | 1.49\* | ≤2     |
 
-\* Scored against the 598px previews scaled to 1440 (`--ref`): `screens/not-found.png` ×1.237 and `screens/search.png` ×2.408 (the blur of a 2.4× upscale costs most of search's 2.12; its geometry matches the tree to the pixel). course/about uses the 848px `screens/course-details.png` ×1.698: 2.92 as built, where the D3 tab shift doubles everything below y=1020, and 1.51 with the tabs temporarily at Figma's 63px offset (the DoD's "excluding D3" score). The `screens/1440/*` exports don't exist yet. Re-score once they do.
+\* Scored against the 598px previews scaled to 1440 (`--ref`): `screens/not-found.png` ×1.237 and `screens/search.png` ×2.408 (the blur of a 2.4× upscale costs most of search's 2.12; its geometry matches the tree to the pixel). course/about uses the 848px `screens/course-details.png` ×1.698: 2.92 as built, where the D3 tab shift doubles everything below y=1020, and 1.51 with the tabs temporarily at Figma's 63px offset (the DoD's "excluding D3" score). course/lessons and course/reviews use `screens/course-lessons.png` (800px, ×1.8) and `screens/course-reviews.png` (669px, ×2.152), both with D3 already in Figma. creator uses the 1079px `screens/creator-profile.png` ×1.335 (run `--url` and `--ref` from PowerShell: Git Bash rewrites `/creators/...` into a Windows path). The `screens/1440/*` exports don't exist yet. Re-score once they do.
 
 ## Decisions (from design_plan.md §9; record changes here)
 
@@ -57,6 +57,18 @@
 - course/about (D3): the tab row sits 78px below the band (y=1035), not Figma's 63 (y=1020), to match Lessons and Reviews. Everything below moves 15px down, so the footer is at 2207 and the page is 2732 tall. Diff 1.51 → 2.92 against the scaled preview. Approved as D3.
 
 ## Blockers and open questions
+- Phase 12 open (copywriter): the creator bio is kept verbatim from Figma (60:2185): it says "Welcome to the creative world of [Creator's Name]" (an unfilled placeholder) and the second paragraph starts "ive into" (a lowercase "Dive" missing its D). Supply the final bio for PurePearl Studio.
+- Phase 12 open (owner): the stats pill says "3 Products" (Figma), but the grid under it shows 6 courses by this creator. Should the count come from the course list, or are "products" something other than courses?
+- Phase 12 notes: the FilterBar takes a `pathname` (default `/courses`), and `coursesHref` takes it as a third argument, so on the profile the menus link to `/creators/<slug>?level=…` and filter only that creator's courses (`listCourses({ creator })`, not a URL parameter; it counts as a filter, so the list isn't repeated to fill pages). This makes `/creators/[slug]` dynamic (ƒ); unknown slugs still 404. There's no pagination, and an empty filter (`?level=advanced`) shows "No courses found" with Clear filters. Follow is a static `<button>` until there are accounts. The avatar is `alt=""` (the h1 beside it names the creator). Below 640 the avatar stacks over the name, the badge wraps under the name, and the tagline and bio drop to `type-body-m`.
+- ⛔ Phase 12 stand-in: `public/images/creators/creator-purepearl.webp` is cut from the 1079px creator preview (72px → 192px, soft; its blue corners sit under the 16px radius). `npm run assets` overwrites it once the manual export lands.
+- Phase 12 aside: `course/CourseVideo` still passes `priority` to `next/image`, which Next 16 deprecates in favour of `preload`. Swap it in Phase 14.
+- Phase 11 open (owner): the Lesson List numbers the modules 1, 2, 4, 5, 6, 7 (no Module 3), kept exactly as in Figma (60:628–60:658). The titles carry the numbers, so the list isn't an `<ol>`. Add a Module 3 or renumber?
+- Phase 11 open (owner): every rating-breakdown row draws five filled stars (Figma 60:1303…60:1347), so the 1-star row looks like the 5-star row. Screen readers hear "5-star ratings: 720" … "1-star ratings: 16". Suggest n filled stars per row (the rest in neutral-100).
+- Phase 11 deviations, need approval: (1) review card 1 uses 26px lines like cards 2–4 (Figma gives its role and quote 24px lines, so it's 276 tall, not 282); cards 2–4 and the footer sit 6px lower. (2) The breakdown bars are count ÷ total (81, 13.5, 2.4, 1.3, 1.8%); Figma's fills are hand-drawn (about 92, 37, 9, 3, 5%). (3) The footer sits 64px below the tab content on all three tabs (About's gap); Figma has 83 on Lessons (2358) and 91 on Reviews (2924), so ours are at 2338 and 2902. (4) The tab column is 725 wide on every tab (About's width, set by the shared layout); Lessons and Reviews are 723 in Figma, so their cards are 2px wider. (5) Reviewer role and "a year ago" use `neutral-400` as in Figma and the sidebar (3.65:1, below AA); switch to `neutral-500` like the approved intro copy?
+- Phase 11 spec corrections (sampled on the previews): (1) the stars on the breakdown rows, review cards and filter chips are `neutral-700` (#4b4c53), not `neutral-950`. (2) The star filter chips are the inactive chip fill (`neutral-50`), not outline pills. (3) The bar and progress tracks are `neutral-100` (#e5e6e8), so `ProgressBar` gained `track="muted"`. (4) The copy sits on 26px lines as on About (intro 52/78, module description 52, quote 78). The name is `type-label-l` on 22px, "Learning Progress" and "Ratings" `type-label-s` on 17px, module titles `type-label-m` on 19px. (5) Figma's header row puts the stars inside the reviewer column (avatar row, 24, stars); the card is avatar row → stars → quote, 24 apart.
+- Phase 11 notes: `Chip` has `size="lg"` (48 tall, 4px gap) for the star filters, and `chipStyles.sizes` holds the heights. `RatingStars` takes a `gap` (default 4, Figma's) and `tone="dark"`, and its partial fill skips the gaps. The Reviews route is now dynamic (ƒ) because it reads `?rating`. The summary card stacks below a 576px column (container query; 1024 stacks, 1280 doesn't) and its stars drop to 16px under 384. The filter chips scroll sideways (full-bleed while the layout stacks). "Learning Progress" 55% is a constant in the Lessons page until there are learner accounts. Empty filters (`?rating=4`: every seed review is 5-star) show "No 4-star reviews yet."
+- ⛔ Phase 11 stand-ins: `public/images/avatars/reviewer-1..4.webp` are cut from the 669px Reviews preview (2.15× upscale, soft). `npm run assets` overwrites them once the manual export lands. The `Placeholder` component is still used by login and signup.
+- Tooling: `node_modules` was installed with bun (untracked `bun.lockb`, `.exe`/`.bunx` shims), so `npx tsc` fetches the wrong package. Run `node node_modules/typescript/bin/tsc --noEmit` (or `npm run build`) until it's reinstalled with npm.
 - Phase 09 deviations, need approval: (1) pagination is centred (564–876) as the spec says, but Figma's box sits at x=588, 25px right of centre. (2) At page 1, Prev (and Next on the last page) is a grey (`neutral-300`), non-link arrow; Figma draws Prev dark on page 1. (3) The search placeholder uses `neutral-500`, following the approved hero deviation (Figma `neutral-400`). (4) The current page number follows Figma in `neutral-300` (#abaeb5, about 2.2:1 on white, below AA). It's announced as `aria-current="page"`, but confirm that the owner wants the grey number and not a highlighted one.
 - Phase 09 spec correction: the page numbers are `type-heading-xs` (Poppins 600 20/28; Figma boxes are 28 tall, and "2" is 12 wide), not `type-body-l`. The filter buttons use a 4px icon–label gap (Figma 55:170: icon at 16, label at 44), not the Button's 8, so they're written out in `FilterBar`, not `buttonClasses`.
 - Phase 09 menus: Filter lists the learning paths plus Clear filters, Level offers Any/Beginner/Intermediate/Advanced, Category lists all 18 categories, and Sort lists the `sortOptions`. The band's lime "Courses" menu is a search scope (Courses and Creators, where Creators goes to the one creator page, as in the header). They are native `<details name=…>` (one open at a time, no JS), and the page keys them on the URL so they close after a navigation. Clicking outside or pressing Esc doesn't close them (static v1). Revisit with a client menu in Phase 14 if wanted.
@@ -106,6 +118,43 @@
 - `.gitignore` ends with a blanket `.claude` (a user change), which also ignores the commands, agents, hooks and figma kit. Confirm this is intended.
 
 ## Commit messages (suggested, one per phase; newest first)
+
+Phase 12 (not committed yet):
+
+```
+feat(creator): build the creator profile page
+
+- Band: 96px avatar, the name with a lime Creator badge, the tagline,
+  the Figma bio (placeholder and "ive" kept for the copywriter), white
+  Products and Followers pills, and a static Follow button. The
+  identity row stacks below 640 and the actions wrap.
+- Body: the search FilterBar and the creator's courses in 3/2/1
+  columns, with an empty state. FilterBar and coursesHref take a
+  pathname, so the menus filter this page; listCourses gains a creator
+  filter.
+- Every block lands on its Figma y at 1440 (page 2136, footer at
+  1611); 1.46% against the scaled preview.
+- Stand-in avatar cut from the Figma preview until the manual export.
+```
+
+Phase 11 (not committed yet):
+
+```
+feat(course): build the Lessons and Reviews tabs
+
+- Lessons: Explore the Modules, the lesson list (lime 72px videocam
+  tiles, title and description; Figma's 1, 2, 4–7 numbering kept),
+  Lesson Content, and Lesson Progress Tracking with a 55% progress card.
+- Reviews: What Learners Are Saying, a rating summary card (lime 4.7
+  and five bar/star/count rows; stacks under a 576px column), rating
+  filter chips (All plus 5–1, ?rating=n links with aria-current,
+  filtered on the server, with an empty state), and four review cards.
+- UI: Chip gains size="lg" (48px icon chip), RatingStars a 4px gap and
+  a dark tone, ProgressBar a neutral-100 track.
+- Stand-in reviewer avatars cut from the Figma preview until the manual
+  export.
+- 1.71% (Lessons) and 1.75% (Reviews) against the scaled previews.
+```
 
 Phase 10 (not committed yet):
 
@@ -204,6 +253,7 @@ feat(home): responsive QA pass and sign-off
 
 ## Session log (newest first, one line each)
 
+- 2026-09-30: Phase 11 → 🟨. Lessons and Reviews tab bodies. At 1440 over CDP: Lessons headings 1118/1242/1884/2034, module rows 99 apart from 1290 (tiles at +2), progress card (120,2158) 725×116, footer 2338. Reviews: summary (120,1268) 725×226 with the lime box at (160,1311) and rows at (313,1308) (bar 282, stars at 611, count at 763), chips at 1566, cards at 1638/1944/2250/2556 (282 each), footer 2902. 375/768/1024/1280 have no overflow. Diffs 1.71/1.75 against the scaled previews.
 - 2026-09-30: Phase 10 → 🟨. The course shell and About are built: `components/course/{CourseHeader,CourseVideo,CourseSidebar,CourseTabs}`, with the grid layout and the About page. At 1440 over CDP: title (122,172), badges at 317, Share 1284–1405, video (125,416) 720×479, band 957, sidebar (908,416) 412×959 with sections at 456/704/912/1124 (avatar 1148), tabs 1035 (D3), About headings 1118/1606/1803, footer 2207. 1280: sidebar 412, video 692. 1024: sidebar 360, band 825. 768 and 375 stack with no overflow, and the video is 16:10 on phones. Tab clicks keep the same `<aside>` node and move `aria-current`. The About route no longer uses `Placeholder`. Course 2 is now 4.8/Intermediate (user decision).
 
 - 2026-09-29: Phase 09 → 🟨. `/courses` built: SearchForm, FilterBar, CategoryTabs and Pagination (`src/components/search/`), `ui/Dropdown` (details menu), `coursesHref`/`searchCategories`, the featured fix, and BlueBand `clip`. At 1440 over CDP: h1 164, input (408,239) 462×52, filters at 432, chips 512, grid 632–3136, pagination 3208, footer 3328, height 3853. 2.12 against `screens/search.png` ×2.408. No overflow at 375/768/1024 with each menu open. The flow was checked in headless Edge: page 3 → Beginner → UI/UX chip → back/back/forward restores state, the search keeps the filters, and Clear filters works. The route no longer uses `Placeholder`.

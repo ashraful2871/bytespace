@@ -19,7 +19,14 @@ const trigger =
 
 const leftPanel = "max-sm:inset-x-0 sm:left-0";
 
-export default function FilterBar({ query }: { query: CourseQuery }) {
+type FilterBarProps = {
+  query: CourseQuery;
+  /** The page the menu links filter: the search page, or a creator profile. */
+  pathname?: string;
+};
+
+export default function FilterBar({ query, pathname = "/courses" }: FilterBarProps) {
+  const href = (patch: Partial<CourseQuery>) => coursesHref(query, patch, pathname);
   const level = levels.find(
     (l) => l.toLowerCase() === query.level?.toLowerCase(),
   );
@@ -47,14 +54,14 @@ export default function FilterBar({ query }: { query: CourseQuery }) {
           {learningPaths.map((path) => (
             <DropdownLink
               key={path.slug}
-              href={coursesHref(query, { category: path.slug })}
+              href={href({ category: path.slug })}
               active={query.category === path.slug}
             >
               {path.label}
             </DropdownLink>
           ))}
           <li className="my-1 border-t border-neutral-100" aria-hidden />
-          <DropdownLink href="/courses">Clear filters</DropdownLink>
+          <DropdownLink href={pathname}>Clear filters</DropdownLink>
         </Dropdown>
 
         <Dropdown
@@ -70,7 +77,7 @@ export default function FilterBar({ query }: { query: CourseQuery }) {
           panelClassName={`${leftPanel} sm:w-52`}
         >
           <DropdownLink
-            href={coursesHref(query, { level: undefined })}
+            href={href({ level: undefined })}
             active={!level}
           >
             Any level
@@ -78,7 +85,7 @@ export default function FilterBar({ query }: { query: CourseQuery }) {
           {levels.map((l) => (
             <DropdownLink
               key={l}
-              href={coursesHref(query, { level: l.toLowerCase() })}
+              href={href({ level: l.toLowerCase() })}
               active={l === level}
             >
               {l}
@@ -101,7 +108,7 @@ export default function FilterBar({ query }: { query: CourseQuery }) {
           {categories.map((c) => (
             <DropdownLink
               key={c.slug}
-              href={coursesHref(query, { category: c.slug })}
+              href={href({ category: c.slug })}
               active={
                 c.slug === "featured"
                   ? !query.category || query.category === "featured"
@@ -128,7 +135,7 @@ export default function FilterBar({ query }: { query: CourseQuery }) {
         {sortOptions.map((o) => (
           <DropdownLink
             key={o.value}
-            href={coursesHref(query, { sort: o.value })}
+            href={href({ sort: o.value })}
             active={o.value === sort.value}
           >
             {o.label}

@@ -18,7 +18,7 @@ export default function CourseTabs({ slug }: { slug: string }) {
             <NavLink
               link={tab}
               scroll={false}
-              className={chipStyles.base}
+              className={`${chipStyles.base} ${chipStyles.sizes.md}`}
               activeClassName={chipStyles.active}
               inactiveClassName={chipStyles.inactive}
             />

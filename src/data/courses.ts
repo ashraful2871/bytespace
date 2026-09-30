@@ -336,6 +336,8 @@ export type CourseQuery = {
   sort?: string;
   page?: number;
   perPage?: number;
+  /** Limits the list to one creator's courses (the creator profile). Not a URL parameter. */
+  creator?: string;
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -355,9 +357,11 @@ export function parseCourseQuery(params: SearchParams): CourseQuery {
   };
 }
 
+/** Builds a search URL on `pathname`, the page the filters apply to (the creator profile reuses the filter bar). */
 export function coursesHref(
   query: CourseQuery,
   patch: Partial<CourseQuery> = {},
+  pathname = "/courses",
 ) {
   const { q, category, level, sort, page } = {
     ...query,
@@ -371,7 +375,7 @@ export function coursesHref(
   if (sort && sort !== "relevant") params.set("sort", sort);
   if (page && page > 1) params.set("page", String(page));
   const search = params.toString();
-  return search ? `/courses?${search}` : "/courses";
+  return search ? `${pathname}?${search}` : pathname;
 }
 
 const CATALOGUE_REPEAT = 15;
@@ -399,6 +403,7 @@ export function listCourses({
   sort,
   page = 1,
   perPage = 18,
+  creator,
 }: CourseQuery = {}) {
   const query = q?.trim().toLowerCase();
   const categoryLabel = (slug: string) =>
@@ -414,14 +419,15 @@ export function listCourses({
           categoryLabel(course.category),
         ].some((field) => field.toLowerCase().includes(query))) &&
       (!category || inCategory(course, category)) &&
-      (!level || course.level.toLowerCase() === level.toLowerCase()),
+      (!level || course.level.toLowerCase() === level.toLowerCase()) &&
+      (!creator || course.creatorSlug === creator),
   );
 
   const sorter = sorters[sort as Sort];
   if (sorter) matches = matches.toSorted(sorter);
 
   const filtered = Boolean(
-    query || (category && category !== "featured") || level,
+    query || (category && category !== "featured") || level || creator,
   );
   const pool = (
     filtered
